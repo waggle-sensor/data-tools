@@ -18,7 +18,7 @@ def getNodes(path):
 
 	# url = 'https://raw.githubusercontent.com/waggle-sensor/beehive-server/newformat/publishing-tools/projects/AoT_Chicago.complete/nodes.csv'
 	# df = pandas.read_csv(url)
-	nodes_path = os.path.join(path,nodes.csv)
+	nodes_path = os.path.join(path,'nodes.csv')
 	df = pandas.read_csv(nodes_path)
 
 	for _, line in df.iterrows():
@@ -52,7 +52,7 @@ def getSensors(path):
 
 	# url = 'https://raw.githubusercontent.com/waggle-sensor/beehive-server/newformat/publishing-tools/projects/AoT_Chicago.complete/sensors.csv'
 	# df = pandas.read_csv(url)
-	sensors_path = os.path.join(path,sensors.csv)
+	sensors_path = os.path.join(path,'sensors.csv')
 	df = pandas.read_csv(sensors_path)
 
 	for _, line in df.iterrows():

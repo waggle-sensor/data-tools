@@ -18,9 +18,9 @@ from collections import OrderedDict
 
 def validate(date_text):
     try:
-        datetime.datetime.strptime(date_text, '%Y/%m/%d')
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
     except ValueError:
-        print("[ERROR] {} uses incorrect date format, should be YYYY/MM/DD".format(date_text))
+        print("[ERROR] {} uses incorrect date format, should be YYYY-MM-DD".format(date_text))
         exit(1)
 
 if __name__ == '__main__':
@@ -78,13 +78,15 @@ if __name__ == '__main__':
 	ontology_dict = dicts[1]
 	triplet_to_hrf_unit_dict = dicts[4]
 
-	p = re.compile('png$')
+	p = re.compile('\.png$')
 	m = p.search(args.output)
 	if not m:
 		print('[ERROR] output file {} is not a png'.format(args.output))
+		exit(1)
 
-	if '/' in args.ouput or '\\' in args.output:
+	if '/' in args.output or '\\' in args.output:
 		print('[ERROR] illegal character in output file name')
+		exit(1)
 
 	# p = re.compile('AoT_Chicago\.complete\.\d{4}-\d{2}-\d{2}')
 	# data_path = os.path.join(cwd,'data')
@@ -135,9 +137,9 @@ if __name__ == '__main__':
 		print('[ERROR] Start date is greater than end date')
 		exit(1)
 
-	start_date = '{} 00:00:00'.format(args.timeframe[0])
-	end_date = '{} 23:59:59'.format(args.timeframe[1])
-
+	start_date = '{} 00:00:00'.format(args.timeframe[0].replace('-','/'))
+	end_date = '{} 23:59:59'.format(args.timeframe[1].replace('-','/'))
+	print(start_date, earliest_date, end_date, latest_date)
 	if (start_date < earliest_date):
 		print('[ERROR] Start date is earlier than the earliest date in data.csv')
 	if (end_date > latest_date):
@@ -200,21 +202,22 @@ if __name__ == '__main__':
 
 	node_to_ontology_dict = {}
 	ontology_to_node_dict = {}
-	for pair in args.ontology:
-		for triplet in ontology_dict[pair[1]]:
-			triplet = tuple(triplet)
-			if triplet not in triplet_list:
-				triplet_list.append(triplet)
-		if pair[0] not in node_list:
-			node_list.append(pair[0])
-		if pair[0] not in node_to_ontology_dict:
-			node_to_ontology_dict[pair[0]] = []
-		if pair[1] not in ontology_to_node_dict:
-			ontology_to_node_dict[pair[1]] = []
-		if pair[1] not in node_to_ontology_dict[pair[0]]:
-			node_to_ontology_dict[pair[0]].append(pair[1])
-		if pair[0] not in ontology_to_node_dict[pair[1]]:
-			ontology_to_node_dict[pair[1]].append(pair[0])
+	if args.ontology:
+		for pair in args.ontology:
+			for triplet in ontology_dict[pair[1]]:
+				triplet = tuple(triplet)
+				if triplet not in triplet_list:
+					triplet_list.append(triplet)
+			if pair[0] not in node_list:
+				node_list.append(pair[0])
+			if pair[0] not in node_to_ontology_dict:
+				node_to_ontology_dict[pair[0]] = []
+			if pair[1] not in ontology_to_node_dict:
+				ontology_to_node_dict[pair[1]] = []
+			if pair[1] not in node_to_ontology_dict[pair[0]]:
+				node_to_ontology_dict[pair[0]].append(pair[1])
+			if pair[0] not in ontology_to_node_dict[pair[1]]:
+				ontology_to_node_dict[pair[1]].append(pair[0])
 
 	and_pattern_list = []
 	for triplet in triplet_list:
@@ -275,6 +278,7 @@ if __name__ == '__main__':
 			data_column = header.index('value_hrf_average') + 1
 		elif 'value_hrf_moving_average' in header:
 			data_column = header.index('value_hrf_moving_average') + 1
+	print
 
 	temp_data_path = os.path.join(data_directory,'tmp')
 	if not os.path.exists(temp_data_path):
@@ -363,7 +367,7 @@ if __name__ == '__main__':
 	if os.path.exists(temp_extract_path):
 		os.unlink(temp_extract_path)
 
-	final_data_directory = os.path.join(data_path,'final')
+	final_data_directory = os.path.join(temp_data_path,'final')
 	if not os.path.exists(final_data_directory):
 		os.makedirs(final_data_directory)
 	clearDir(final_data_directory)
@@ -647,6 +651,20 @@ unset multiplot
 	r_string = '-r {} {}'.format(args.resolution[0],args.resolution[1]) if args.resolution != [1920,1080] else ''
 
 	address = args.input if not args.address else args.address
+	if '_' in address:
+		address = address.replace('_','\\\\_')
+
+	if '_' in i_string:
+		i_string = i_string.replace('_','\\\\_')
+
+	if '_' in o_string:
+		o_string = o_string.replace('_','\\\\_')
+
+	if '_' in p_string:
+		p_string = p_string.replace('_','\\\\_')
+
+	if '_' in n_string:
+		n_string = n_string.replace('_','\\\\_')
 
 	context = { # in alphabetical order based on key
 		# 'address':address,
