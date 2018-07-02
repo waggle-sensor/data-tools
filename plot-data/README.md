@@ -14,7 +14,7 @@ The bash shell scripts this tool uses require a Linux or Mac OS X environment to
 To retrieve data, go to https://github.com/waggle-sensor/waggle/tree/master/data, download your desired data set, and follow the instructions to decompress the data.  
 To generate a simple plot run `python3 gen_custom_plots.py -i data_directory_path -t start_date end_date -p node_id parameter sensor subsystem`  
 `data_directory_path` is the path to the directory created when untaring the archive, or any other directory containing the required files, listed above.  
-`star_date` and `end_date` are dates in the format YYYY-MM-DD. Data is plotted from 00:00:00 on the start date to 23:59:59 on the end date.  
+`start_date` and `end_date` are dates in the format YYYY-MM-DD. Data is plotted from 00:00:00 on the start date to 23:59:59 on the end date.  
 `node_id` is the id of the node you want to plot data from. A list of nodes can be found in the `nodes.csv` file included with the datasets.
 `parameter`, `sensor` and `subsystem` specify exactly what data you want from the node. A list of these can be found in the `sensors.csv` file included with the datasets.
 
