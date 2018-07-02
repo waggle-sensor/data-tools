@@ -28,45 +28,77 @@ if __name__ == '__main__':
 	optional = parser._action_groups.pop()
 	data = parser.add_argument_group('plot data arguments')
 	settings = parser.add_argument_group('plot settings arguments')
-	data.add_argument('-t', '--timeframe', metavar=('start_date', 'end_date'), nargs=2, help='timeframe for which to plot data, date format = YYYY/MM/DD')
-	data.add_argument('-p', '--plot', metavar=('node_id','parameter','sensor','subsystem'), action='append', nargs=4, help='node id, parameter, sensor, and subsystem to plot')
-	data.add_argument('-n', '--ontology', metavar=('node_id','ontology'), action ='append', nargs=2, help='specify a node and an ontology to plot all of the data for on one graph')
-	data.add_argument('-o', '--output', default='output.png', help='output file name, default name is output.png, files are written to ./plots/')
+	data.add_argument('-i', '--input', help='input directory path', required=True)
+	data.add_argument('-o', '--output', default='output.png', help='output file name, default name is output.png, files are written to input_path/plots/')
+	data.add_argument('-t', '--timeframe', metavar=('start_date', 'end_date'), nargs=2, help='timeframe for which to plot data, date format = YYYY-MM-DD', required=True)
+	data.add_argument('-p', '--plot', metavar=('node_id','parameter','sensor','subsystem'), action='append', nargs=4, help='node id, parameter, sensor, and subsystem to plot, either this option or -n (--ontology) is required to generate a plot')
+	data.add_argument('-n', '--ontology', metavar=('node_id','ontology'), action ='append', nargs=2, help='specify a node and an ontology to plot all of the data for on one graph, either this option or -p (--plot) is required to generate a plot')
 	settings.add_argument('-v', '--overlay', action='store_true', help='overlay data in one plot, cannot be used with -l (--layout) option')
 	settings.add_argument('-l', '--layout', default=[1,1], metavar=('rows', 'columns'), nargs=2, type=int, help='specify the number of rows and columns of plots, cannot be used with -v (--overlay) option')
-	settings.add_argument('-r', '--trim', action='store_true', help='trim outlying data points (>±3σ)')
+	settings.add_argument('-m', '--trim', action='store_true', help='trim outlying data points (>±3σ)')
 	settings.add_argument('-s', '--logscale', action='store_true', help='plot data using a log scale for the y axis')
 	settings.add_argument('-F', '--titlefont', default=[16], nargs=1, type=int, action='store', help='font size for plot titles, default = 16')
 	settings.add_argument('-f', '--plotfont', default=[12], nargs=1, type=int, action='store', help='font size for text inside the plot, default = 12')
 	settings.add_argument('-e', '--provenancefont', default=[14], nargs = 1, type=int, action='store', help='font size for plot provenance, default = 14')
-	settings.add_argument('-i', '--resolution', default=[1920,1080], metavar=('width,height'), nargs=2, type=int, help='resolution of output png (width,height)')
+	settings.add_argument('-r', '--resolution', default=[1920,1080], metavar=('width,height'), nargs=2, type=int, help='resolution of output png (width,height)')
+	settings.add_argument('-a', '--address', help='source address of the data to be included in the plot provenance')
 	parser._action_groups.append(optional)
+
+	args = parser.parse_args()
+	# print(args)
 
 	cwd = os.getcwd()
 
-	dicts = getNodes(cwd)
+	if args.input is None:
+		print('[ERROR] no input directory specified')
+		parser.print_help()
+		exit(1)
+
+	if not os.path.exists(args.input):
+		print('[ERROR] input path does not exist')
+
+	required_files = ['data.csv','nodes.csv','sensors.csv','provenance.csv','README.md']
+	exit_flag = False
+	for file in required_files:
+		file_path = os.path.join(args.input,file)
+		if not os.path.exists(file_path):
+			print('[ERROR] {} does not exist in the input path'.format(file))
+			exit_flag = True
+	if exit_flag:
+		exit(1)
+
+	data_directory = args.input
+
+	dicts = getNodes(data_directory)
 	nodes_dict = dicts[0]
 	details_dict = dicts[1]
 
-	dicts = getSensors(cwd)
+	dicts = getSensors(data_directory)
 	parameter_to_sensor_subsystem_dict = dicts[0]
 	ontology_dict = dicts[1]
 	triplet_to_hrf_unit_dict = dicts[4]
 
-	p = re.compile('AoT_Chicago\.complete\.\d{4}-\d{2}-\d{2}')
-	data_path = os.path.join(cwd,'data')
-	AoTComplete_path = ''
-	for file in os.listdir(data_path):
-		m = p.match(file)
-		if m:
-			AoTComplete_path = os.path.join(data_path,file)
+	p = re.compile('png$')
+	m = p.search(args.output)
+	if not m:
+		print('[ERROR] output file {} is not a png'.format(args.output))
+
+	if '/' in args.ouput or '\\' in args.output:
+		print('[ERROR] illegal character in output file name')
+
+	# p = re.compile('AoT_Chicago\.complete\.\d{4}-\d{2}-\d{2}')
+	# data_path = os.path.join(cwd,'data')
+	# data_directory = ''
+	# for file in os.listdir(data_path):
+	# 	m = p.match(file)
+	# 	if m:
+	# 		data_directory = os.path.join(data_path,file)
 	
-	datacsv_path = os.path.join(AoTComplete_path,'data.csv')
+	datacsv_path = os.path.join(data_directory,'data.csv')
 	earliest_date = getStartDate(datacsv_path)
 	latest_date = getEndDate(datacsv_path)
 
-	args = parser.parse_args()
-	# print(args)
+	
 
 	exit_flag = False
 	if args.plot is None and args.ontology is None:
@@ -89,7 +121,7 @@ if __name__ == '__main__':
 
 	validate(args.timeframe[0])
 	validate(args.timeframe[1])
-	p = re.compile('\d{4}/\d{2}/\d{2}')
+	p = re.compile('\d{4}-\d{2}-\d{2}')
 	m0 = p.match(args.timeframe[0])
 	m1 = p.match(args.timeframe[1])
 	if not m0:
@@ -200,44 +232,60 @@ if __name__ == '__main__':
 	# determine which file is most efficient to pull data from
 	input_path = ''
 
-	month_path = os.path.join(AoTComplete_path,'month.csv')
-	week_path = os.path.join(AoTComplete_path,'week.csv')
-	day_path = os.path.join(AoTComplete_path,'day.csv')
+	# This was used with fileMaker.sh
+	# month_path = os.path.join(data_directory,'month.csv')
+	# week_path = os.path.join(data_directory,'week.csv')
+	# day_path = os.path.join(data_directory,'day.csv')
 
-	month_start_date = getStartDate(month_path)
-	month_end_date = getEndDate(month_path)
-	week_start_date = getStartDate(week_path)
-	week_end_date = getEndDate(week_path)
-	day_start_date = getStartDate(day_path)
-	day_end_date = getEndDate(day_path)
+	# month_start_date = getStartDate(month_path)
+	# month_end_date = getEndDate(month_path)
+	# week_start_date = getStartDate(week_path)
+	# week_end_date = getEndDate(week_path)
+	# day_start_date = getStartDate(day_path)
+	# day_end_date = getEndDate(day_path)
 
-	daily_data_path = os.path.join(data_path,'daily_data')
-	day_directory_path = os.path.join(daily_data_path,day_start_date.split(' ')[0].replace('/','-'))
-	copy_day_path = os.path.join(day_directory_path,'{}.csv'.format(day_start_date.split(' ')[0].replace('/','-')))
-	if not os.path.exists(daily_data_path):
-		os.makedirs(daily_data_path)
-	if not os.path.exists(day_directory_path):
-		os.makedirs(day_directory_path)
-	if not os.path.exists(copy_day_path):
-		shutil.copyfile(day_path,copy_day_path)
+	# daily_data_path = os.path.join(data_path,'daily_data')
+	# day_directory_path = os.path.join(daily_data_path,day_start_date.split(' ')[0].replace('/','-'))
+	# copy_day_path = os.path.join(day_directory_path,'{}.csv'.format(day_start_date.split(' ')[0].replace('/','-')))
+	# if not os.path.exists(daily_data_path):
+	# 	os.makedirs(daily_data_path)
+	# if not os.path.exists(day_directory_path):
+	# 	os.makedirs(day_directory_path)
+	# if not os.path.exists(copy_day_path):
+	# 	shutil.copyfile(day_path,copy_day_path)
 
-	if start_date >= day_start_date:
-		input_path = day_path
-	elif start_date >= week_start_date:
-		input_path = week_path
-	elif start_date >= month_start_date:
-		input_path = month_path
-	else:
-		input_path = datacsv_path
+	# if start_date >= day_start_date:
+	# 	input_path = day_path
+	# elif start_date >= week_start_date:
+	# 	input_path = week_path
+	# elif start_date >= month_start_date:
+	# 	input_path = month_path
+	# else:
+	# 	input_path = datacsv_path
 
 	input_path = datacsv_path
 
+	data_column = 0
+	with open(input_path,'r') as f:
+		header = f.readline()
+		header = header.strip().split(',')
+		if 'value_hrf' in header:
+			data_column = header.index('value_hrf') + 1
+		elif 'value_hrf_average' in header:
+			data_column = header.index('value_hrf_average') + 1
+		elif 'value_hrf_moving_average' in header:
+			data_column = header.index('value_hrf_moving_average') + 1
+
+	temp_data_path = os.path.join(data_directory,'tmp')
+	if not os.path.exists(temp_data_path):
+		os.makedirs(temp_data_path)
+
 	# determine how many days long the time frame is
-	time_list = args.timeframe[0].split('/')
+	time_list = args.timeframe[0].split('-')
 	for i,item in enumerate(time_list):
 		time_list[i] = int(item)
 	timeframe_start = datetime.date(time_list[0],time_list[1],time_list[2])
-	time_list = args.timeframe[1].split('/')
+	time_list = args.timeframe[1].split('-')
 	for i,item in enumerate(time_list):
 		time_list[i] = int(item)
 	timeframe_end = datetime.date(time_list[0],time_list[1],time_list[2])
@@ -254,12 +302,12 @@ if __name__ == '__main__':
 	# have data yet into a temp file
 	all_date_pattern = ''
 	for date in date_list:
-		if not os.path.exists(os.path.join(daily_data_path,date.replace('/','-'))):
+		if not os.path.exists(os.path.join(temp_data_path,date.replace('/','-'))):
 			all_date_pattern += date if len(all_date_pattern) == 0 else '\\|{}'.format(date)
 
 	temp_extract_path = ''
 	if len(all_date_pattern) > 0:
-		temp_extract_path = os.path.join(daily_data_path,'temp.csv')
+		temp_extract_path = os.path.join(temp_data_path,'temp.csv')
 		print('Extracting data for all dates in time frame...')
 		grep(all_date_pattern,input_path,temp_extract_path)
 
@@ -267,7 +315,7 @@ if __name__ == '__main__':
 	for date in date_list:
 		input_path = temp_extract_path
 		dash_date = date.replace('/','-')
-		date_directory = os.path.join(daily_data_path,dash_date)
+		date_directory = os.path.join(temp_data_path,dash_date)
 		if not os.path.exists(date_directory):
 			os.makedirs(date_directory)
 		extract_path = os.path.join(date_directory,'{}.csv'.format(dash_date))
@@ -296,7 +344,7 @@ if __name__ == '__main__':
 					if not os.path.exists(extract_path):
 						print('Extracting {} data from node {}...'.format(triplet[0],node))
 						grep(and_pattern_list[i],input_path,extract_path,useAnd=True)
-						cut(',','1,7',extract_path,extract_path)
+						cut(',','1,{}'.format(data_column),extract_path,extract_path)
 					if os.stat(extract_path).st_size <= 56:
 						print('[WARNING] No {} data from sensor {} in subsystem {} for node {} on {} exists'.format(triplet[0],triplet[1],triplet[2],node,date))
 						os.unlink(extract_path)
@@ -308,7 +356,7 @@ if __name__ == '__main__':
 					if not os.path.exists(extract_path):
 						print('Extracting {} data from node {}...'.format(triplet[0],node))
 						grep(and_pattern_list[i],input_path,extract_path,useAnd=True)
-						cut(',','1,7',extract_path,extract_path)
+						cut(',','1,{}'.format(data_column),extract_path,extract_path)
 					if os.stat(extract_path).st_size <= 56:
 						print('[WARNING] No {} data from sensor {} in subsystem {} for node {} on {} exists'.format(triplet[0],triplet[1],triplet[2],node,date))
 						os.unlink(extract_path)
@@ -329,7 +377,7 @@ if __name__ == '__main__':
 				final_data_path = os.path.join(final_data_directory,'{}-{}-{}-{}.csv'.format(node,triplet[0],triplet[1],triplet[2]))
 				with open(final_data_path,'w+') as f:
 					for date in date_list:
-						read_path = os.path.join(daily_data_path,date.replace('/','-'),node,'{}-{}-{}.csv'.format(triplet[0],triplet[1],triplet[2]))
+						read_path = os.path.join(temp_data_path,date.replace('/','-'),node,'{}-{}-{}.csv'.format(triplet[0],triplet[1],triplet[2]))
 						if os.path.exists(read_path):
 							with open(read_path,'r') as r:
 								f.write(r.read())
@@ -345,7 +393,7 @@ if __name__ == '__main__':
 				final_data_path = os.path.join(final_data_directory,'{}-{}-{}-{}.csv'.format(node,triplet[0],triplet[1],triplet[2]))
 				with open(final_data_path,'w+') as f:
 					for date in date_list:
-						read_path = os.path.join(daily_data_path,date.replace('/','-'),node,'{}-{}-{}.csv'.format(triplet[0],triplet[1],triplet[2]))
+						read_path = os.path.join(temp_data_path,date.replace('/','-'),node,'{}-{}-{}.csv'.format(triplet[0],triplet[1],triplet[2]))
 						if os.path.exists(read_path):
 							with open(read_path,'r') as r:
 								f.write(r.read())
@@ -355,7 +403,7 @@ if __name__ == '__main__':
 					open(final_data_path, 'a').close()
 
 	# create plot directory
-	plot_directory = os.path.join(cwd,'plots')
+	plot_directory = os.path.join(data_directory,'plots')
 	if not os.path.exists(plot_directory):
 		os.makedirs(plot_directory)
 
@@ -576,6 +624,8 @@ set multiplot layout {layout} title "{{/={provenance_font_size} Created: {today}
 unset multiplot
 '''
 
+	i_string = '-i {} '.format(args.input)
+	o_string = '-o {} '.format(args.output) if args.output != 'output.png' else ''
 	t_string = '-t {} {} '.format(args.timeframe[0],args.timeframe[1])
 	p_string = ''
 	if args.plot:
@@ -587,21 +637,23 @@ unset multiplot
 		for pair in args.ontology:
 			add = '-n {} {} '.format(pair[0],pair[1])
 			n_string += add
-	o_string = '-o {} '.format(args.output) if args.output != 'output.png' else ''
 	v_string = '-v ' if args.overlay else ''
 	l_string = '-l {} {} '.format(args.layout[0],args.layout[1]) if args.layout != [1,1] else ''
-	r_string = '-r ' if args.trim else ''
+	m_string = '-r ' if args.trim else ''
 	s_string = '-s ' if args.logscale else ''
 	F_string = '-F {} '.format(args.titlefont[0]) if args.titlefont[0] != 16 else ''
 	f_string = '-f {} '.format(args.plotfont[0]) if args.plotfont[0] != 12 else ''
-	e_string = '-e {}'.format(args.provenancefont[0]) if args.provenancefont[0] != 14 else ''
+	e_string = '-e {} '.format(args.provenancefont[0]) if args.provenancefont[0] != 14 else ''
+	r_string = '-r {} {}'.format(args.resolution[0],args.resolution[1]) if args.resolution != [1920,1080] else ''
+
+	address = args.input if not args.address else args.address
 
 	context = { # in alphabetical order based on key
 		# 'address':address,
 		'code':'gen\\\\_custom\\\\_plots.py',
-		'command':'gen\\\\_custom\\\\_plots.py {t}{p}{n}{o}{v}{l}{r}{s}{F}{f}{e}'.format(t=t_string,p=p_string,n=n_string,o=o_string,v=v_string,l=l_string,r=r_string,s=s_string,F=F_string,f=f_string,e=e_string),
+		'command':'gen\\\\_custom\\\\_plots.py {i}{o}{t}{p}{n}{v}{l}{m}{s}{F}{f}{e}{r}'.format(i=i_string,o=o_string,t=t_string,p=p_string,n=n_string,v=v_string,l=l_string,m=m_string,s=s_string,F=F_string,f=f_string,e=e_string,r=r_string),
 		# 'description':description,
-		'data_address':'AoT\\\\_Chicago.complete.latest.tar',
+		'data_address':address,
 		'layout':'{},{}'.format(args.layout[0],args.layout[1]),
 		'logscale':logscale,
 		'multiplot':multiplot,
