@@ -193,12 +193,12 @@ def merge_output(output_path, final_output_path):
 
 
 def get_number_of_lines_in_file(filename):
-    chunksize = 1024**2 # 1MB chunks
+    chunk_size = 1024**2 # 1MB chunks
     total = 0
 
     with open(filename, 'rb') as file:
         while True:
-            chunk = file.read(chunksize)
+            chunk = file.read(chunk_size)
             if not chunk:
                 break
             total += chunk.count(b'\n')
