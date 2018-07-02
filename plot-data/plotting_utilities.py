@@ -10,14 +10,16 @@ from io import StringIO
 parent = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 
 
-def getNodes(cwd):
+def getNodes(path):
 	# nodes_dict = [node_id:[vsn,address,description]]
 	# details_dict = [node_id:[details]]
 	details_dict = collections.OrderedDict()
 	nodes_dict = collections.OrderedDict()
 
-	url = 'https://raw.githubusercontent.com/waggle-sensor/beehive-server/newformat/publishing-tools/projects/AoT_Chicago.complete/nodes.csv'
-	df = pandas.read_csv(url)
+	# url = 'https://raw.githubusercontent.com/waggle-sensor/beehive-server/newformat/publishing-tools/projects/AoT_Chicago.complete/nodes.csv'
+	# df = pandas.read_csv(url)
+	nodes_path = os.path.join(path,nodes.csv)
+	df = pandas.read_csv(nodes_path)
 
 	for _, line in df.iterrows():
 		nodes_dict[line['node_id']] = [line['vsn'], line['address'], line['description']]
@@ -34,7 +36,7 @@ def getNodes(cwd):
 	return nodes_dict, details_dict
 
 
-def getSensors(cwd):
+def getSensors(path):
 	#get 5 dictionaries:
 	#parameter_to_sensor_subsystem_dict = {paramter:[sensor,subsystem]}
 	#ontology_dict = {ontology:[parameter,sensor,subsystem]} maps ontology to parameter sensor and subsystem
@@ -48,15 +50,18 @@ def getSensors(cwd):
 	hrf_unit_to_sensor_dict = collections.OrderedDict()
 	triplet_to_hrf_unit_dict = {}
 
-	url = 'https://raw.githubusercontent.com/waggle-sensor/beehive-server/newformat/publishing-tools/projects/AoT_Chicago.complete/sensors.csv'
-	df = pandas.read_csv(url)
+	# url = 'https://raw.githubusercontent.com/waggle-sensor/beehive-server/newformat/publishing-tools/projects/AoT_Chicago.complete/sensors.csv'
+	# df = pandas.read_csv(url)
+	sensors_path = os.path.join(path,sensors.csv)
+	df = pandas.read_csv(sensors_path)
 
 	for _, line in df.iterrows():
 		triplet = (line['parameter'], line['sensor'], line['subsystem'])
 		triplet_to_hrf_unit_dict[triplet] = line['hrf_unit']
 
 		#skip lines we don't want to plot in the future by searching parameter
-		p = re.compile('atm|^5um|point|^id|bins')
+		# p = re.compile('atm|^5um|point|^id|bins')
+		p = re.compile('^id|bins')
 		match = p.search(line['parameter'])
 		if match:
 			continue
