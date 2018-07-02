@@ -74,7 +74,7 @@ def grep(values, keywords):
 def fill_lookup(add_fields, source_path, keys):
     lookup_table = {}
     with open(source_path, 'r') as source_file:
-        csv_handler = DictReader(source_file)
+        csv_handler = DictReader(sanitize_input(source_file))
 
         # Sanitize header field
         headers = csv_handler.fieldnames.copy()
@@ -127,7 +127,7 @@ def perform(input_range, input_path, output_path, grep_op, cut_op, add_op,
             nodes_lookup_header, nodes_lookup, sensors_lookup_header, sensors_lookup):
     with open(output_path, 'w') as output:
         with open(input_path, 'r') as file:
-            csv_handler = DictReader(file)
+            csv_handler = DictReader(sanitize_input(file))
 
             # Add operation
             headers = csv_handler.fieldnames.copy()
@@ -184,7 +184,7 @@ def merge_output(output_path, final_output_path):
         csv_output = None
         for path in output_path:
             with open(path, 'r') as file:
-                csv_input = DictReader(file)
+                csv_input = DictReader(sanitize_input(file))
                 if csv_output is None:
                     csv_output = DictWriter(output, fieldnames=csv_input.fieldnames)
                     csv_output.writeheader()
@@ -206,6 +206,10 @@ def get_number_of_lines_in_file(filename):
     return total
 
 
+def sanitize_input(lines):
+    return filter(lambda line: '\0' not in line, lines)
+
+
 def divide_input(input_path, divide):
     if divide == 1:
         return [input_path]
@@ -215,7 +219,7 @@ def divide_input(input_path, divide):
     num_of_lines[-1] += total_num_of_line % divide
     file_path = []
     with open(input_path, 'r') as file:
-        csv_input = DictReader(file)
+        csv_input = DictReader(sanitize_input(file))
         for index, num_of_line in enumerate(num_of_lines):
             with open(input_path + str(index), 'w') as output:
                 csv_output = DictWriter(output, fieldnames=csv_input.fieldnames)
