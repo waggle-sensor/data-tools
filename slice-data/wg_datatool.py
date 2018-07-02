@@ -193,14 +193,25 @@ def merge_output(output_path, final_output_path):
                     csv_output.writerow(line)
 
 
+def get_number_of_lines_in_file(filename):
+    chunksize = 32*1024 # 32K chunks
+    total = 0
+
+    with open(filename, 'r') as file:
+        while True:
+            chunk = file.read(chunksize)
+            if not chunk:
+                break
+            total += chunk.count('\n')
+
+    return total
+
+
 def divide_input(input_path, divide):
     if divide == 1:
         return [input_path]
 
-    with open(input_path, 'r') as file:
-        csv_input = DictReader(file)
-        total_num_of_line = sum(1 for line in csv_input)
-
+    total_num_of_line = get_number_of_lines_in_file(input_path)
     num_of_lines = [int(total_num_of_line / divide)] * divide
     num_of_lines[-1] += total_num_of_line % divide
     file_path = []
