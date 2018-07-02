@@ -1,127 +1,37 @@
 # Data Reduction Command Line Tool
 
 ## Requirements
-This tool requires that the user has Python3 installed and the following Python modules: OrderedDict, timedelta, timedelta, argparse, datetime, time, csv, io, os, and re. OrderedDict is imported from collections and timedelta is importedfrom datetime.
-
-This was tested on a desktop computer with an Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz, 8 GB of RAM, Ubuntu 18.04 LTS, and Linux 4.15.0-23-generic.
+This tool requires that the user has Python3 installed and was tested on a desktop computer with an Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz, 8 GB of RAM, Ubuntu 18.04 LTS, and Linux 4.15.0-23-generic. It has also been tested on an Apple Macbook and worked correctly.
 
 ## Description
+This tool will reduce the amount of data from a complete node data set by averaging sensor values over a specified time period.
 
-There are two files located in this directory that can be used to reduce data: dataReduction.py and dataReduction.sh. The dataReduction.py file is a python script where the user can manually change the arguments to  reduce data, and reduce data only. The dataReduction.sh file is a BASH script that automates the data reduction process by already specifying the arguments for the user. It also automatically bundles the reduced data set with metadata files to create a new archive.
-
-### dataReduction.py: Data Reduction Script
-The file dataReduction.py takes in an input .csv file, a time period, and an output .csv file. The input .csv file must contain the header: 'timestamp,node_id,subsystem,sensor,parameter,value_raw,value_hrf' and should come from the data.csv.gz file contained in the AoT Chicago Complete dataset @ ```https://github.com/waggle-sensor/waggle/tree/master/data```. It then reads the input .csv file, parses through the large csv data set, and reduces the amount of data by averaging/combining pieces of data (sensor values) over a certain time period given by the user. Then it writes out a new .csv file. Timestamps are written out as halfway between the interval specified by the user (see **High Level Overview** for examples). This script functions as a stand alone command line tool.
-
-### dataReduction.sh: Data Reduction and Archival Script
-The file dataReduction.sh is a BASH script that takes in a single parameter (the same as the -t parameter for dataReduction.py without the -t specifier): ```#m ``` where ```#``` is an integer and ```m``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively. This script runs the dataReduction.py tool, then creates a .tar archive of the reduced data and the metadata files included with the downloaded full data set.
-
-## High Level Overview of dataReduction.py
-The file .csv input is given as: 
-```
-(timestamp,node_id,subsystem,sensor,parameter,value_raw,value_hrf)
-```
-
-Create dictionary keys using reduced timestamps from user input and editing out sensor values:
-
-```
-(reduced_timestamp, node_id, subsystem, sensor, parameter)
-```
-
-Reduced timestamp examples:
-
-hourly: ```2018/05/01 11:20:39``` would reduce and be output as ```2018/05/01 11:30:00``` since it is between the 11th and 12th hours of that day.
-
-daily: ```2018/05/01 11:20:39``` would reduce and be output as ```2018/05/01 12:00:00``` since the timestamp occurs on that day.
-
-Accumulation is done roughly as:
-
-```(count, sum) = aggregates[reduced_key]``` 
-```aggregates[reduced_key] = (count + 1, sum + value)```
-
-Rows of the output .csv file are in the form: timestamp,node_id,subsystem,sensor,parameter,sum,count,average. But they are stored as key-value pairs: 
-
-```outputDictionary[reduced_key] = (count, sum, average)```
-
+The command line tool dataReduction.py takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day). This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a new reducedData.csv file (timestamps are written out as halfway between the interval specified by the user). The final output of the dataReduction.py tool will be a directory that contains the reduced data set (reducedData.csv) and the extra metadata files (nodes.csv, provenance.csv, README.md, and sensors.csv) from the passed in unpackaged complete node data set directory path.
 
 ## How to Use dataReduction.py
 
-When typing on the terminal, the tool takes in three required parameters with identifiers and one optional parameter with an identifier: input file (```-i, --input```), time period (```-t, --time```), output file (```-o, --output```), and verbose option for number of lines parsed (```-v, --verbose```).
+When typing on the terminal, the tool takes in two required parameters (directory path and time period) with identifiers and one optional parameter (verbose) with an identifier: directory path (```-d, --directory```), time period (```-t, --time```) and verbose option for number of lines parsed (```-v, --verbose```).
 
-**Input:** Input should be a .csv file with the headers ```(timestamp,node_id,subsystem,sensor,parameter,value_raw,value_hrf)```
+**Directory:** The path to the unpackaged complete node data set (must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv).
 
-**Period:** The period parameter should be in the format ```-t #m ``` where ```#``` is an integer and ```m``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively.
-
-**Output:** Output should also be a .csv file which does not need to exist before executing this tool. The output .csv file of this tool will have the headers: ```timestamp,node_id,subsystem,sensor,parameter,sum,count,average``` all the time. If there are more than a certain number of values (1000 right now) in any of the averaging periods, the tool will output the .csv file with the headers: ```timestamp,node_id,subsystem,sensor,parameter,sum,count,average,min,max```. It includes a minimum and maximum value per averaging period that is useful when graphing or analyzing the output data.
+**Period:** The period parameter should be in the format ```-t #x ``` where ```#``` is an integer and ```x``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively.
 
 **Verbose:** Optional parameter. Specifying the verbose option with an integer will print out the number of lines parsed for every increment of the integer passed in (e.g. if user enters 1000, every 1000 lines the program will print the number of lines - 1000, 2000, 3000...)
 
-**Note:** User is not allowed to enter anything less than 24 seconds because it is how often data is received and an average could not be calculated for anything lower. 
+**Note:** User is not allowed to enter anything less than 24 seconds because it is how often data is received and an average could not be calculated for anything lower.
+**Note:** The reducedData.csv output file will have the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average``` all the time. If there are more than a certain number of values (1000 right now) in any of the averaging periods, the tool will output the reducedData.csv file with the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf__sum,value_hrf_count,value_hrf_average,value_hrf__min,value_hrf_max```. It includes a minimum and maximum value per averaging period that is useful when graphing or analyzing the output data.
 
-Terminal command format should be like these examples: ```python3 dataReduction.py -i oneMillion.csv -t 12h -o newOutput.csv``` or ```python3 dataReduction.py -i oneMillion.csv -t 12h -o newOutput.csv -v 1000```
+Terminal command format should be like these examples: ```python3 dataReduction.py -d /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m``` or ```python3 dataReduction.py -d /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m -v 1000```
 
-Typing ```-h``` or ```--help``` when using this tool will pull up the help:
-```
-waggle-student@ermac:~/summer2018/morrison/dataReductionTool$ time python3 dataReduction.py -h
-Generating...
-usage: dataReduction.py [-h] [-i INPUT] [-t PERIOD] [-o OUTPUT] [-v NUMLINES]
+Typing ```-h``` or ```--help``` as a parameter when using this tool will pull up the help: ```python3 dataReduction.py -h```.
 
-average and reduce .csv file data sets from data.csv.gz
+Errors will be specified for user error such as: not all of the parameters being filled in when using the tool, not specifying an input file, specifying an input or output file that is not .csv format, etc.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -i INPUT, --input INPUT
-                        Input .csv file name.
-  -t PERIOD, --time PERIOD
-                        Rows condense over this amt of time. Type an int
-                        followed by 's','m','h',or 'd'.
-  -o OUTPUT, --output OUTPUT
-                        Output .csv file name.
-  -v NUMLINES, --verbose NUMLINES
-                        Type an int. Prints # of lines parsed for every
-                        increment of entered int.
-```
-
-Errors will be specified for user error such as: not all of the parameters being filled in when using the tool, not specifying an input file, or specifying an input or output file that is not .csv format
-
-Error:
-```
-waggle-student@ermac:~/summer2018/morrison/dataReductionTool$ python3 dataReduction.py -i oneMillion.csv -t 30s -o avgOut
-Generating...
-Error: Output file must be .csv.
-```
-
-## Step-by-Step Instructions
-
-### dataReduction.py: Data Reduction Script (Manual) and Plotting
-1. First follow the instructions listed at this link: https://github.com/waggle-sensor/waggle/tree/master/data to download and unpackage the AoT Chicago Complete node dataset.
-2. Then clone this directory: ```git clone https://github.com/waggle-sensor/summer2018.git``` into your home directory.
-3. Copy the data.csv file from the downloaded complete node dataset:
-  * The whole file(large, not recommended):
-      * Navigate to ```/summer2018/morrison/dataReductionTool``` in the cloned directory.
-      * Run ```cp /path_to_data.csv .```.
-  * Part of the file (specify size, recommended):
-    * Navigate to the unpackaged ```AoT_Chicago.complete.*``` directory.
-    * Run ```head -n* data.csv > file_name.csv``` and replace ```*``` with the number of lines desired and ```file_name``` with the desired file name to get the first * lines from the data.csv file into a new file.
-    * Or, run ```head -n1 data.csv > file_name.csv```, then ```tail -n* data.csv >> file_name.csv```, and replace ```*``` with the number of lines desired and ```file_name``` with the desired file name to get the last * lines from the data.csv file into a new file.
-    * Navigate to ```/summer2018/morrison/dataReductionTool``` in the cloned directory.
-    * Run ```cp /path_to_file_name.csv .```
-4. Run ```python3 dataReduction.py -i file_name.csv -t #m -o output_file.csv``` replacing ```file_name``` with the name of the file you just copied, ```#``` with the time period, ```m``` with the units of the time period, and ```output_file.csv``` with the output file name. Specify ```-v``` with an integer to see the number of lines being parsed.
-5. Open graph.plt in the ```/summer2018/morrison/dataReductionTool``` directory and change the line ```set output...``` to the desired PDF name.
-6. Still in graph.plt, change the line ```set title...``` to the desired plot title.
-7. Open graph.sh in the ```/summer2018/morrison/dataReductionTool``` directory and change the first ```grep``` command for both lines to search for a specific sensor (use sensor names from the downloaded data.csv data set). Change the second ```grep``` command to change which sensor parameter is being searched for. Add (or modify if it already exists) the third ```grep``` command to search for a certain node using the node ID, or remove it to get all nodes with that sensor. Add (or modify if it already exists) a fourth ```grep``` command to search for a specific date and/or time.
-8. Continuing to edit graph.sh, change the first line's ```cat``` command file name to be the name of the file just copied (either all of or part of data.csv) and change the second ```cat``` command file name to be the output file name from running the dataReduction.py tool.
-9. Run ```./graph.sh``` to generate a plot as a PDF with the file name being the name specified in step 5.
-
-### dataReduction.sh: Data Reduction and Archival Script (Automatic)
-1. First follow the instructions listed at this link: https://github.com/waggle-sensor/waggle/tree/master/data to download and unpackage the AoT Chicago Complete node dataset.
-2. Then clone this directory: ```git clone https://github.com/waggle-sensor/summer2018.git``` into your home directory.
-3. Copy dataReduction.py and dataReduction.sh from the /summer2018/morrison/dataReductionTool directory into the unpackaged AoT Chicago Complete node dataset directory from step 1.
-4. Inside the AoT Chicago Complete node dataset directory that you unpackaged in step 1, run the command ```./dataReduction.sh #m``` where ```#``` is an integer and ```m``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively. This command will start the data reduction python script and archive the reduced data set with the metadata files from the downloaded full data set. To only reduce a portion of the data set:
-	* Navigate to the unpackaged ```AoT_Chicago.complete.*``` directory.
-	* Run ```head -n* data.csv > file_name.csv``` and replace ```*``` with the number of lines desired and ```file_name``` with the desired file name to get the first * lines from the data.csv file into a new file.
-	* Or, run ```head -n1 data.csv > file_name.csv```, then ```tail -n* data.csv >> file_name.csv```, and replace ```*``` with the number of lines desired and ```file_name``` with the desired file name to get the last * lines from the data.csv file into a new file.
-	* Open dataReduction.sh and replace the input file name (data.csv) for the python3 dataReduction.py command to be the name of the partial data file that you just created.
-5. To view and unpackage the files that were just archived, move the newly created ```reducedDataSet.tar.gz``` archive to the desired directory and run the command ```tar -xvf reducedDataSet.tar.gz```.
+## Step-by-Step Instructions for Reducing Data
+1. First follow the instructions listed at this link: ```https://github.com/waggle-sensor/waggle/tree/master/data``` to download and unpackage a complete node dataset. Place the final, entirely unpackaged directory in the desired location on your computer.
+2. Clone or download the data-tools directory at this link: ```https://github.com/waggle-sensor/data-tools``` and move it to the desired location on your computer.
+3. From the command line, navigate to the /data-tools/data-reduction-tool directory downloaded from step 2.
+4. Run the dataReduction.py tool from the command line: ```python3 dataReduction.py -d /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```. Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. Adding ```-v #``` with ```#``` replaced by an integer will print the number of lines that have been parsed through. Remember, the directory path specified must contain the following five files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. 
 
 ## Examples
 

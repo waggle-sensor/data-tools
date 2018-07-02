@@ -1,115 +1,38 @@
 # Moving Averages Command Line Tool
 
 ## Requirements
-This tool requires that the user has Python3 installed and the following Python modules: OrderedDict,timedelta,deque,argparse,datetime,time,csv,os, and re. OrderedDict is imported from collections, timedelta is imported from datetime, and deque is imported from collections.
-
-This tool was tested on a desktop computer with an Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz, 8 GB of RAM, Ubuntu 18.04 LTS, and Linux 4.15.0-23-generic.
+This tool requires that the user has Python3 installed, and was tested on a desktop computer with an Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz, 8 GB of RAM, Ubuntu 18.04 LTS, and Linux 4.15.0-23-generic. It has also been tested on an Apple Macbook and worked correctly.
 
 ## Description
-The file called movingAvg.py is meant to work similarly to dataReduction.py as a command line tool that takes in a .csv file, parses the data, then outputs a .csv file. The movingAvg.py file computes a moving average for each node's sensors for a time ranged window (e.g. over a span of 5 mins., 1 hr., 1 day, etc.). The data comes from an input .csv file from the data.csv.gz data set. In the future, it is possible that this tool will be integrated with the dataReduction.py tool to make one tool.
+This tool will calculate a simple moving average from a complete node data set by averaging sensor values for time ranged windows specified by the user.
 
-## High Level Overview
-Data is read in from the input .csv file specified in the command line. This .csv file must contain the header: 'timestamp,node_id,subsystem,sensor,parameter,value_raw,value_hrf' and should come from the data.csv.gz file contained in the AoT Chicago Complete dataset @ ```https://github.com/waggle-sensor/waggle/tree/master/data```. A dictionary (sensorDict) is then created and continually updated with new sensor/timestamps within the time range window as the program runs through the input file lines. The key of this dictionary, however, differs from dataReduction.py since the key will only consist of node id, subsystem, sensor, and parameter. The value for each of these keys is a deque (queue) object that will hold the current sample of data values to be averaged and each of their timestamps. An example of the dictionary format is shown below:
+The command line tool movingAvg.py takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified determines the time range window for calculating a simple moving average (e.g. over a span of 5 mins., 1 hr., 1 day, etc.). This time ranged window will move through the data in the data.csv file. For each sensor on each node, the tool will append new sensor values to the time ranged window and throw away values outside of the time ranged window. It will constantly calculate the average of the values in this window, which becomes the simple moving average as it parses through the data. 
 
-```
-sensorDict =
-{
-	'node/sensor1': deque([[val1,timestamp1],[val2,timestamp2],[val3,timestamp3]...[val(n),timestamp(n)]]), 
-	'node/sensor2': deque([[val1,timestamp1],[val2,timestamp2],[val3,timestamp3]...[val(n),timestamp(n)]]),
-	...
-	...
-}
-```
+This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and create moving averages for pieces of data (sensor values) over the time range window period given by the user. It will then create a new movingAvgData.csv file. The final output of the movingAvg.py tool will be a directory that contains the moving average data set (movingAvgData.csv) and the extra metadata files (nodes.csv, provenance.csv, README.md, and sensors.csv) from the passed in unpackaged complete node data set directory path.
 
-Example:
-```
-sensorDict = 
-{
-	'001e0610ba46,lightsense,apds_9006_020,intensity,': deque([['1.929', '2017/03/28 20:55:19'], ['1.929', '2017/03/28 20:55:42'], ['1.849', '2017/03/28 20:56:07'], ['1.849', '2017/03/28 20:56:31'], ['1.849', '2017/03/28 20:56:55'], ['1.849', '2017/03/28 20:57:19'], ['1.849', '2017/03/28 20:57:43'], ['1.929', '2017/03/28 20:58:07'], ['1.849', '2017/03/28 20:58:33'], ['1.849', '2017/03/28 20:58:56']]),
- 
-	'001e0610ba46,lightsense,hih6130,humidity,': deque([['32.17', '2017/03/28 20:55:19'], ['32.18', '2017/03/28 20:55:42'], ['32.17', '2017/03/28 20:56:07'], ['32.21', '2017/03/28 20:56:31'], ['32.21', '2017/03/28 20:56:55'], ['32.22', '2017/03/28 20:57:19'], ['32.22', '2017/03/28 20:57:43'], ['32.22', '2017/03/28 20:58:07'], ['32.24', '2017/03/28 20:58:33'], ['32.25', '2017/03/28 20:58:56']]),
-	...
-	...
-}
-```
-As each node/sensor queue grows with new timestamps/values, the program keeps track of the current time range period. If the values have begun to extend outside of the current time range (time range is calculated as: ```endTime = timestamp_just_queued``` and ```beginTime = timestamp_just_queued - period```), then the program will deque all values outside the time range. So, if a value is queued with a timestamp of ```2018/06/14 08:15:23``` and the period (time range) is 5 minutes, then the new end of the time range is that timestamp (```2018/06/14 08:15:23```) and the new beginning of the time range is the timestamp minus the period (```2018/06/14 08:15:23 - 00:05:00 = 2018/06/14 00:10:23```). Any timestamps in the queue that are below the new beginning of the time range are dequed and not counted in the new moving average calculation.
-
-The program will then calculate the average of the values in the queue for the current node/sensor using the equation ```Σ(queue values)/(num. of vals in queue)```. It then writes out all the information to a line in the output file in the format:
- 
-```
-2019/06/14 20:00:00,001e0610ba46,lightsense,apds_9006_020,intensity, 1000,10,100
-```
-
-The ranges will overlap quite a bit since it is a moving average.
-
-**Note:** Timestamps are written out as halfway between the time range averaging window specified by the user: ```(ending_timestamp) - (period_length/2)```.
+**Important:** This tool has not been optimized yet and is time-window dependant; thus it will take a **very** long time (read: several days) to create moving averages for large data sets (> a few Gb) or for larger averaging time period windows (> 12h). It is **highly** recommended that a reduced data set, or an excerpt from the data.csv file, is used with this tool.
 
 ## How to Use
-When typing on the terminal, the tool takes in three parameters with identifiers: input file (```-i, --input```), period (```-t, --time```), and output file (```-o, --output```). 
+When typing on the terminal, the tool takes in two parameters with identifiers: directory path (```-d, --directory```) and averaging window period (```-t, --time```). 
 
+**Directory:** The path to the unpackaged complete node data set (must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv).
 
-**Input:** Input should be a .csv file with the headers ```(timestamp,node_id,subsystem,sensor,parameter,value_raw,value_hrf)```
+**Period:** The averaging window period. This parameter should be in the format ```-t #x ``` where ```#``` is an integer and ```x``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively.
 
-**Period:** The period parameter should be in the format ```-t #m ``` where ```#``` is an integer and ```m``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively.
+**Note:** User is not allowed to enter anything less than 24 seconds because it is how often data is received and an average could not be calculated for anything lower.
+**Note:** The movingAvgData.csv output file will have the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_moving_average```.
 
-**Output:** Output should also be a .csv file which does not need to exist before executing this tool.
+Terminal command format should be like this example: ```python3 movingAvg.py -d /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m```
 
-**Note:** User is not allowed to enter anything less than 24 seconds because it is how often data is received and an average could not be calculated for anything lower. 
-
-Terminal command format should be like this example: 
-```
-waggle-student@ermac:~/summer2018/morrison/dataReductionTool$ python3 movingAvg.py -i moveAvgIn.csv -t 5h -o moveAvgOut.csv
-```
-
-Typing ```-h``` or ```--help``` when using this tool will pull up the help:
-```
-waggle-student@ermac:~/summer2018/morrison/movingAverageTool$ python3 movingAvg.py -h
-Generating...
-usage: movingAvg.py [-h] [-i INPUT] [-t PERIOD] [-o OUTPUT]
-
-make moving averages and produce .csv file data sets from data.csv.gz
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -i INPUT, --input INPUT
-                        input .csv file name
-  -t PERIOD, --time PERIOD
-                        moving average period. Type an int followed by
-                        's','m','h',or 'd'.
-  -o OUTPUT, --output OUTPUT
-                        output .csv file name
-
-```
+Typing ```-h``` or ```--help``` when using this tool will pull up the help: ```python3 movingAvg.py -h```.
 
 Errors will be specified for user error such as: not specifying the units of the period, not specifying an input file, etc.
 
-Error:
-```
-waggle-student@ermac:~/summer2018/morrison/movingAverageTool$ python3 movingAvg.py -i oneMillion.csv -t 5 -o moveAvgOut.csv
-Generating...
-Error: Time value must be an int followed by 's','m','h',or 'd'.
-
-```
-
-## Step-by-Step Instructions for Creating Moving Averages and Plots
-1. First follow the instructions listed at this link: https://github.com/waggle-sensor/waggle/tree/master/data to download and unpackage the AoT Chicago Complete node dataset.
-2. Then clone this directory: ```git clone https://github.com/waggle-sensor/summer2018.git``` into your home directory.
-3. Copy the data.csv file from the downloaded complete node dataset:
-  * The whole file(large, not recommended):
-      * Navigate to ```/summer2018/morrison/movingAverageTool``` in the cloned directory.
-      * Run ```cp /path_to_data.csv .```.
-  * Part of the file (specify size, recommended):
-    * Navigate to the unpackaged ```AoT_Chicago.complete.*``` directory.
-    * Run ```head -n* data.csv > file_name.csv``` and replace ```*``` with the number of lines desired and ```file_name``` with the desired file name to get the first * lines from the data.csv file into a new file.
-    * Or, run ```head -n1 data.csv > file_name.csv```, then ```tail -n* data.csv >> file_name.csv```, and replace ```*``` with the number of lines desired and ```file_name``` with the desired file name to get the last * lines from the data.csv file into a new file.
-    * Navigate to ```/summer2018/morrison/movingAverageTool``` in the cloned directory.
-    * Run ```cp /path_to_file_name.csv .```
-4. Run ```python3 movingAvg.py -i file_name.csv -t #m -o output_file.csv``` replacing ```file_name``` with the name of the file you just copied, ```#``` with the moving average period, ```m``` with the units of the moving average period, and ```output_file.csv``` with the output file name (**Note:** The longer the period and the larger the input file, the longer the program will have to run).
-5. Open graph.plt in the ```/summer2018/morrison/movingAverageTool``` directory and change the line ```set output...``` to the desired PDF name.
-6. Still in graph.plt, change the line ```set title...``` to the desired plot title.
-7. Open graph.sh in the ```/summer2018/morrison/movingAverageTool``` directory and change the first ```grep``` command for both lines to search for a specific sensor (use sensor names from the downloaded data.csv data set). Change the second ```grep``` command to change which sensor parameter is being searched for. Add (or modify if it alread exists) the third ```grep``` command to search for a certain node using the node ID, or remove it to get all nodes with that sensor. Add (or modify if it already exists) a fourth ```grep``` command to search for a specific date and/or time.
-8. Continuing to edit graph.sh, change the first line's ```cat``` command file name to be the name of the file just copied (either all of or part of data.csv) and change the second ```cat``` command file name to be the output file name from running the movingAvg.py tool.
-9. Run ```./graph.sh``` to generate a plot as a PDF with the file name being the name specified in step 5.
+## Step-by-Step Instructions for Creating Moving Averages
+1. First follow the instructions listed at this link: ```https://github.com/waggle-sensor/waggle/tree/master/data``` to download and unpackage a complete node dataset. Place the final, entirely unpackaged directory in the desired location on your computer.
+2. Clone or download the data-tools directory at this link: ```https://github.com/waggle-sensor/data-tools``` and move it to the desired location on your computer.
+3. From the command line, navigate to the /data-tools/moving-average-tool directory downloaded from step 2.
+4. Run the movingAvg.py tool from the command line: ```python3 movingAvg.py -d /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```. Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. Remember, the directory path specified must contain the following five files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv.
 
 ## Examples
 

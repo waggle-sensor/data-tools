@@ -15,7 +15,6 @@
 import os
 import time
 import argparse
-import subprocess
 from csv import DictReader, DictWriter
 from itertools import islice
 from multiprocessing import cpu_count, Process
@@ -75,7 +74,7 @@ def grep(values, keywords):
 def fill_lookup(add_fields, source_path, keys):
     lookup_table = {}
     with open(source_path, 'r') as source_file:
-        csv_handler = DictReader(source_file)
+        csv_handler = DictReader(sanitize_input(source_file))
 
         # Sanitize header field
         headers = csv_handler.fieldnames.copy()
@@ -128,7 +127,7 @@ def perform(input_range, input_path, output_path, grep_op, cut_op, add_op,
             nodes_lookup_header, nodes_lookup, sensors_lookup_header, sensors_lookup):
     with open(output_path, 'w') as output:
         with open(input_path, 'r') as file:
-            csv_handler = DictReader(file)
+            csv_handler = DictReader(sanitize_input(file))
 
             # Add operation
             headers = csv_handler.fieldnames.copy()
@@ -185,7 +184,7 @@ def merge_output(output_path, final_output_path):
         csv_output = None
         for path in output_path:
             with open(path, 'r') as file:
-                csv_input = DictReader(file)
+                csv_input = DictReader(sanitize_input(file))
                 if csv_output is None:
                     csv_output = DictWriter(output, fieldnames=csv_input.fieldnames)
                     csv_output.writeheader()
@@ -194,17 +193,21 @@ def merge_output(output_path, final_output_path):
 
 
 def get_number_of_lines_in_file(filename):
-    chunksize = 32*1024 # 32K chunks
+    chunk_size = 1024**2 # 1MB chunks
     total = 0
 
-    with open(filename, 'r') as file:
+    with open(filename, 'rb') as file:
         while True:
-            chunk = file.read(chunksize)
+            chunk = file.read(chunk_size)
             if not chunk:
                 break
-            total += chunk.count('\n')
+            total += chunk.count(b'\n')
 
     return total
+
+
+def sanitize_input(lines):
+    return filter(lambda line: '\0' not in line, lines)
 
 
 def divide_input(input_path, divide):
@@ -216,7 +219,7 @@ def divide_input(input_path, divide):
     num_of_lines[-1] += total_num_of_line % divide
     file_path = []
     with open(input_path, 'r') as file:
-        csv_input = DictReader(file)
+        csv_input = DictReader(sanitize_input(file))
         for index, num_of_line in enumerate(num_of_lines):
             with open(input_path + str(index), 'w') as output:
                 csv_output = DictWriter(output, fieldnames=csv_input.fieldnames)
@@ -317,13 +320,8 @@ if __name__ == '__main__':
             exit(1)
 
     start_t = time.time()
-    # with open(input_path, 'r') as file:
-    #     csv_input = DictReader(file)
-    #     total_num_of_line = sum(1 for line in csv_input)
-    total_num_of_line = subprocess.check_output(['wc','-l',input_path])
-    total_num_of_line = total_num_of_line.decode().split(' ')
-    total_num_of_line = int(total_num_of_line[0])
 
+    total_num_of_line = get_number_of_lines_in_file(input_path)
     num_of_lines = [int(total_num_of_line / number_of_workers)] * number_of_workers
     num_of_lines[-1] += total_num_of_line % number_of_workers
     slices = [(0, 0)] * number_of_workers
