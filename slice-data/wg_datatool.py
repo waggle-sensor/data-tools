@@ -192,7 +192,7 @@ def merge_output(output_path, final_output_path):
                     csv_output.writerow(line)
 
 
-def get_total_lines_in_file(filename):
+def get_number_of_lines_in_file(filename):
     chunksize = 32*1024 # 32K chunks
     total = 0
 
@@ -210,7 +210,7 @@ def divide_input(input_path, divide):
     if divide == 1:
         return [input_path]
 
-    total_num_of_line = get_total_lines_in_file(input_path)
+    total_num_of_line = get_number_of_lines_in_file(input_path)
     num_of_lines = [int(total_num_of_line / divide)] * divide
     num_of_lines[-1] += total_num_of_line % divide
     file_path = []
