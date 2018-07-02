@@ -15,7 +15,6 @@
 import os
 import time
 import argparse
-import subprocess
 from csv import DictReader, DictWriter
 from itertools import islice
 from multiprocessing import cpu_count, Process
