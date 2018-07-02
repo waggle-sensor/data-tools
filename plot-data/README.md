@@ -1,88 +1,109 @@
 # Custom Plot Generation
 
-This tool generates custom plots based on command line input. It retrieves the complete data set, then extracts the data for the desired parameters and time frame, then plots the data.
+## Overview
 
-This tool relies on `plotting utilities.py`, `extract.sh` and `cut.sh` in the parent directory. It also requires the pandas and numpy packages for python.
+This tool generates plots based on command line input. Given a directory with data in a file called `data.csv`, as well as metadata files including `nodes.csv`, `sensors.csv`, `provenance.csv` and `README.md`, the tool will extract the requested data from `data.csv` and plot it. The format of the plots can be altered using optional command line arguments.
 
-To retrieve data run `./data/fileMaker.sh`
-To generate plots run `python3 gen_custom_plots.py ...` 
+## Requirements
 
-## Data Retrieval
+This tool depends on **python3**, **numpy** and **pandas** packages for python3, as well as **gnuplot**. Please make sure they are installed in the system where they are intended to be used.  
+The bash shell scripts this tool uses require a Linux or Mac OS X environment to run.
 
-`fileMaker.sh` downloads and uncompresses the complete data set, then cuts the data into slices of the last 30 days, last 7 days and last 1 day. `gen_custom_plots.py` will further reduce the data.
+## How to Use
 
-## Plot Generation
+To retrieve data, go to https://github.com/waggle-sensor/waggle/tree/master/data, download your desired data set, and follow the instructions to decompress the data.  
+To generate a simple plot run `python3 gen_custom_plots.py -i data_directory_path -t start_date end_date -p node_id parameter sensor subsystem`  
+`data_directory_path` is the path to the directory created when untaring the archive, or any other directory containing the required files, listed above.  
+`star_date` and `end_date` are dates in the format YYYY-MM-DD. Data is plotted from 00:00:00 on the start date to 23:59:59 on the end date.  
+`node_id` is the id of the node you want to plot data from. A list of nodes can be found in the `nodes.csv` file included with the datasets.
+`parameter`, `sensor` and `subsystem` specify exactly what data you want from the node. A list of these can be found in the `sensors.csv` file included with the datasets.
+
+## Documentation
+
+### Data Retrieval
+
+https://github.com/waggle-sensor/waggle/tree/master/data contains a list of data sets available for download, as well as instructions on how to decompress the archive.
+
+### Plot Generation
 
 `gen_custom_plots.py` extracts the specified data from the files created by `fileMaker.sh` and combines the data into plottable datasets. Then the data is plotted as specified by command line arguments. The data extracted each time the tool is run is stored in daily slices so that it does not need to be extracted again, because extracting the data is very time consuming. If data is already extracted for a given plot, the files will just be combined into a final plottable dataset. If only some of the specified data is already extracted, the rest of the data will be extracted, skipping over the data that already exists.
 
-### Command Line Arguments
+#### Command Line Arguments
 
-#### Plot Data Arguments
+##### Plot Data Arguments
 
-The arguments needed to generate a plot are `-p` (`--plot`), `-t` (`--timeframe`) and `-o` (`--output`)
-* `-p` specifies the node, parameter, sensor, and subsystem data to plot
-	* At least one node, parameter, sensor, subsystem quadruplet must be specified to generate a plot
-	* Multiple quadruplets can be specified by using the `-p` argument multiple times
-	* In order for a plot to be generated, the quadruplet must be valid
-		* A quadruplet is valid if:
-			* The node exists in nodes.csv
-			* The parameter exists in sensors.csv
-			* The sensor measures the parameter
-			* The sensor belongs to the subsystem
-* `-t` specifies a start date and an end date, defining the time frame over which to plot the data
-	* Date format: YYYY/MM/DD
-	* Data is plotted from 00:00:00 on the start date to 23:59:59 on the end date
-	* A valid time frame is required to generate a plot
-		* A time frame is valid if:
-			* Both the start date and the end date have the correct date format
-			* The start date is earlier than or the same as the end date
-			* Both the start and date exist in the data sets
+The arguments needed to generate a plot are `-i` (`--input`), `-o` (`--output`), `-t` (`--timeframe`) and `-p` (`--plot`)
+* `-i` specifies the directory that contains `data.csv` and the necessary metadata
+	* Required files in input directory:
+		* `data.csv`
+		* `nodes.csv`
+		* `sensors.csv`
+		* `provenance.csv`
+		* `README.md`
 * `-o` specifies the output file name
 	* If this argument is not provided, a default file name will be used
 	* The default file name is 'output.png'
+* `-p` specifies the node, parameter, sensor, and subsystem data to plot
+	* A list of nodes exists in nodes.csv
+	* A list of parameters, sensors and subsystems exists in sensors.csv
+* `-t` specifies a start date and an end date, defining the time frame over which to plot the data
+	* Date format: YYYY-MM-DD
+	* Data is plotted from 00:00:00 on the start date to 23:59:59 on the end date
 
-#### Plot Settings Arguments
+##### Plot Settings Arguments
 
-These arguments determine how the data will be displayed in the plot: `-v` (`--overlay`), `-l` (`--layout`), `-r` (`--trim`), `-s` (`--logscale`), `-F` (`--titlefont`), `-f` (`--plotfont`)
+These arguments determine how the data will be displayed in the plot: `-v` (`--overlay`), `-l` (`--layout`), `-m` (`--trim`), `-s` (`--logscale`), `-F` (`--titlefont`), `-f` (`--plotfont`), `-r` (`--resolution`), `-a` (`--address`)
 * `-v` overlays all of the data in one plot
 	* This is the default behavior if no layout is specified
 	* If multiple parameters are being plotted, there can be a maximum of two different units associated with those parameters for this option to work (e.g. temperature has unit 'C', humidity has unit 'RH' and pressure has unit 'hPa', temperature and humidity could be plotted in one plot, but temperature, humidity and pressure could not be)
 	* Cannot be used in conjunction with `l`
-* `-l` specifies a the number of rows and columns of plots
+* `-l` specifies the number of rows and columns of plots
 	* The default layout is 1 by 1
-	* The product of rows and columns cannot be less than the number of plots
+	* The product of rows and columns must be greater than or equal to the number of plots
 	* Cannot be used in conjunction with `-v`
-* `-r` trims outlying data points (>±3σ)
+* `-m` trims outlying data points (>±3σ)
 * `-s` plots data using a log scale for the y axis
 * `-F` sets the font size for plot titles and provenance, the default size is 12
 * `-f` sets the font size for plot keys and axis labels, the default size is 10
+* `-r` sets the resolution for the output image
+* `-a` sets the source address of the data for the plot provenance
 
-#### Optional Arguments
+##### Optional Arguments
 
 To get help for this tool use `-h` (`--help`)
 * `-h` shows a help message and exits
 
-### Usage
+#### Usage
 
-#### Help (`-h`)
+##### Help (`-h`)
 `python3 gen_custom_plots.py -h` produces the following output:
 ```
-usage: gen_custom_plots.py [-h] [-t start_date end_date]
-                           [-p node_id parameter sensor subsystem] [-o OUTPUT]
-                           [-v] [-l rows columns] [-r] [-s] [-F TITLEFONT]
-                           [-f PLOTFONT]
+usage: gen_custom_plots.py [-h] -i INPUT [-o OUTPUT] -t start_date end_date
+                           [-p node_id parameter sensor subsystem]
+                           [-n node_id ontology] [-v] [-l rows columns] [-m]
+                           [-s] [-F TITLEFONT] [-f PLOTFONT]
+                           [-e PROVENANCEFONT] [-r width,height width,height]
+                           [-a ADDRESS]
 
 Generate custom data sets and plots
 
 plot data arguments:
-  -t start_date end_date, --timeframe start_date end_date
-                        timeframe for which to plot data, date format =
-                        YYYY/MM/DD
-  -p node_id parameter sensor subsystem, --plot node_id parameter sensor subsystem
-                        node id, parameter, sensor, and subsystem to plot
+  -i INPUT, --input INPUT
+                        input directory path
   -o OUTPUT, --output OUTPUT
                         output file name, default name is output.png, files
-                        are written to ./plots/
+                        are written to input_path/plots/
+  -t start_date end_date, --timeframe start_date end_date
+                        timeframe for which to plot data, date format = YYYY-
+                        MM-DD
+  -p node_id parameter sensor subsystem, --plot node_id parameter sensor subsystem
+                        node id, parameter, sensor, and subsystem to plot,
+                        either this option or -n (--ontology) is required to
+                        generate a plot
+  -n node_id ontology, --ontology node_id ontology
+                        specify a node and an ontology to plot all of the data
+                        for on one graph, either this option or -p (--plot) is
+                        required to generate a plot
 
 plot settings arguments:
   -v, --overlay         overlay data in one plot, cannot be used with -l
@@ -90,19 +111,25 @@ plot settings arguments:
   -l rows columns, --layout rows columns
                         specify the number of rows and columns of plots,
                         cannot be used with -v (--overlay) option
-  -r, --trim            trim outlying data points (>±3σ)
+  -m, --trim            trim outlying data points (>±3σ)
   -s, --logscale        plot data using a log scale for the y axis
   -F TITLEFONT, --titlefont TITLEFONT
-                        font size for plot titles
+                        font size for plot titles, default = 16
   -f PLOTFONT, --plotfont PLOTFONT
-                        font size for text inside the plot
+                        font size for text inside the plot, default = 12
+  -e PROVENANCEFONT, --provenancefont PROVENANCEFONT
+                        font size for plot provenance, default = 14
+  -r width,height width,height, --resolution width,height width,height
+                        resolution of output png (width,height)
+  -a ADDRESS, --address ADDRESS
+                        source address of the data to be included in the plot
+                        provenance
 
 optional arguments:
   -h, --help            show this help message and exit
-
 ```
 
-#### Simple Plots
+##### Simple Plots
 
 Example 1: Plot temperature data from sensor bmp180, subsystem metsense, node 001e0610ba46, from 2018-06-20 to 2018-06-23. 
 `python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610ba46 temperature bmp180 metsense`  
@@ -148,7 +175,7 @@ And generate the following plot:
 ![example2.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/example2.png)  
 <img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/example2.png?token=AUW0Ur0XhNAzABN0xcQKDru_vkjuiw14ks5bPUBNwA%3D%3D">
 
-#### Using Plot Settings Arguments
+##### Using Plot Settings Arguments
 
 Example 3: Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png overlaid in one plot.  
 The command to generate this plot:  
