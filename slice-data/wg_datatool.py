@@ -317,13 +317,8 @@ if __name__ == '__main__':
             exit(1)
 
     start_t = time.time()
-    # with open(input_path, 'r') as file:
-    #     csv_input = DictReader(file)
-    #     total_num_of_line = sum(1 for line in csv_input)
-    total_num_of_line = subprocess.check_output(['wc','-l',input_path])
-    total_num_of_line = total_num_of_line.decode().split(' ')
-    total_num_of_line = int(total_num_of_line[0])
 
+    total_num_of_line = get_number_of_lines_in_file(input_path)
     num_of_lines = [int(total_num_of_line / number_of_workers)] * number_of_workers
     num_of_lines[-1] += total_num_of_line % number_of_workers
     slices = [(0, 0)] * number_of_workers
