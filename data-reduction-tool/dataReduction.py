@@ -30,9 +30,9 @@ def setup():
     
     #set up command line arguments
     parser = argparse.ArgumentParser(description="average and reduce .csv file data sets from data.csv.gz")
-    parser.add_argument('-d','--directory', dest='path', help="Path to unpackaged complete node data set.")
-    parser.add_argument('-t','--time', dest='period', help="Rows condense over this amt of time. Type an int followed by 's','m','h',or 'd'.")
-    parser.add_argument('-v','--verbose', dest='numLines', help='Type an int. Prints # of lines parsed for every increment of entered int.')
+    parser.add_argument('-i','--input', dest='path', help="Path to unpackaged complete node data set. (e.g. '-i /home/name/AoT_Chicago.complete.2018-06-19')")
+    parser.add_argument('-t','--time', dest='period', help="Rows condense over this amt of time. Type an int followed by 's','m','h',or 'd' (e.g. '-t 30m').")
+    parser.add_argument('-v','--verbose', dest='numLines', help="Type an int. Prints # of lines parsed for every increment of entered int (e.g. '-v 1000').")
     args = parser.parse_args()
 
     #check that path exists and contains the necessary files
@@ -45,8 +45,13 @@ def setup():
         print("Error: Path does not exist. Specify full path to unpackaged complete node data set")
         exit(1);
 
+    #remove trailing slash if user includes it
+    if (str(dirPath[-1:]) == "/"):
+        dirPath = dirPath[:-1]
+        
     #set the input file (full path to file) 
     inputFile = dirPath+"/data.csv"
+
 
     #make sure user specifies a time period
     if args.period == None:
@@ -92,7 +97,7 @@ def setup():
     dirList = dirPath.split("/")
     parentDir = dirList[len(dirList)-1]
     subDir = dirPath + "/" + parentDir + "_reduced_data_" + str(args.period)
-    fileName = subDir + "/reducedData.csv"
+    fileName = subDir + "/data.csv"
     
     if not os.path.exists(os.path.dirname(fileName)):
         try:
@@ -280,9 +285,9 @@ def copyDigestFiles():
 
     #modify the README, create new README, delete old README
     modifierText = """## NOTE: This README has been modifed by dataReduction.sh, and the data included in this directory is now reduced.\n
-Within this file, the 'data.csv.gz' archive is referred to as the compressed CSV containing the sensor data file (data.csv). The data.csv file within this compressed archive has been replaced by the file reducedData.csv.
+Within this README, the 'data.csv.gz' archive is referred to as the compressed CSV containing the sensor data file (data.csv). The data.csv file from this compressed archive has been replaced by the reduced data.csv.
 All other metadata mentioned in this README remains the same, except for the provenance metadata and the list of columns in data.csv.gz. Since this file no longer exists, these columns are incorrect.
-The columns remain the same but 'value_raw' and 'value_hrf' do not exist in the new reducedData.csv file; instead, the columns now include either 'value_hrf_sum,value_hrf_count,value_hrf_average', or 'value_hrf_sum,value_hrf_count,value_hrf_average,value_hrf_min,value_hrf_max'
+The columns remain the same but 'value_raw' and 'value_hrf' do not exist in the new reduced data.csv file; instead, the columns now include either 'value_hrf_sum,value_hrf_count,value_hrf_average', or 'value_hrf_sum,value_hrf_count,value_hrf_average,value_hrf_min,value_hrf_max'
 The provenance.csv file contains the provenance for the original data set. Provenance for reduced data:
 New Provenance - This data was reduced and combined with the original digest metadata on """ + str(datetime.datetime.utcnow()) + ". It has been modifed by the dataReduction.py data reduction tool.\n\n"
 
@@ -291,7 +296,7 @@ New Provenance - This data was reduced and combined with the original digest met
     with open (newReadme,'w') as n, open (oldReadme, "r") as o:
         text = o.read()
         n.write(modifierText+text)
-        
+
     try:
         subprocess.run(["rm " + oldReadme.replace(" ","\ ")], shell=True, check=True)
     except subprocess.CalledProcessError as e:
