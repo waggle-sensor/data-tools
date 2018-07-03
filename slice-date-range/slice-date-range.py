@@ -9,7 +9,7 @@ from shutil import copytree, ignore_patterns
 
 def copy_project(src, dst):
     try:
-        copytree(project_dir, build_dir, ignore=ignore_patterns('data.*'))
+        copytree(project_dir, build_dir, ignore=ignore_patterns('data.*', 'offsets.csv'))
     except FileExistsError:
         pass
 
