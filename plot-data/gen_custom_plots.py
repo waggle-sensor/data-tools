@@ -54,20 +54,21 @@ if __name__ == '__main__':
 		parser.print_help()
 		exit(1)
 
-	if not os.path.exists(args.input):
+	data_directory = os.path.abspath(args.input)
+	if not os.path.exists(data_directory):
 		print('[ERROR] input path does not exist')
+		exit(1)
 
 	required_files = ['data.csv','nodes.csv','sensors.csv','provenance.csv','README.md']
 	exit_flag = False
 	for file in required_files:
-		file_path = os.path.join(args.input,file)
+		file_path = os.path.join(data_directory,file)
 		if not os.path.exists(file_path):
 			print('[ERROR] {} does not exist in the input path'.format(file))
 			exit_flag = True
 	if exit_flag:
 		exit(1)
 
-	data_directory = args.input
 
 	dicts = getNodes(data_directory)
 	nodes_dict = dicts[0]
@@ -88,13 +89,6 @@ if __name__ == '__main__':
 		print('[ERROR] illegal character in output file name')
 		exit(1)
 
-	# p = re.compile('AoT_Chicago\.complete\.\d{4}-\d{2}-\d{2}')
-	# data_path = os.path.join(cwd,'data')
-	# data_directory = ''
-	# for file in os.listdir(data_path):
-	# 	m = p.match(file)
-	# 	if m:
-	# 		data_directory = os.path.join(data_path,file)
 	
 	datacsv_path = os.path.join(data_directory,'data.csv')
 	earliest_date = getStartDate(datacsv_path)
@@ -139,7 +133,7 @@ if __name__ == '__main__':
 
 	start_date = '{} 00:00:00'.format(args.timeframe[0].replace('-','/'))
 	end_date = '{} 23:59:59'.format(args.timeframe[1].replace('-','/'))
-	print(start_date, earliest_date, end_date, latest_date)
+	# print(start_date, earliest_date, end_date, latest_date)
 	if (start_date < earliest_date):
 		print('[ERROR] Start date is earlier than the earliest date in data.csv')
 	if (end_date > latest_date):
@@ -229,8 +223,9 @@ if __name__ == '__main__':
 		if triplet_to_hrf_unit_dict[triplet] not in ylabel_list:
 			ylabel_list.append(triplet_to_hrf_unit_dict[triplet])
 	
-	if len(ylabel_list) > 2 and args.overlay:
+	if (len(ylabel_list) > 2 and args.overlay) or (len(ylabel_list) > 2 and not args.overlay and args.layout == [1,1]):
 		print('[ERROR] Cannot overlay data with more than 2 different units on one plot')
+		exit(1)
 
 	# determine which file is most efficient to pull data from
 	input_path = ''
@@ -269,16 +264,13 @@ if __name__ == '__main__':
 	input_path = datacsv_path
 
 	data_column = 0
+	header_list = ['value_hrf','value_hrf_average','value_hrf_moving_average']
 	with open(input_path,'r') as f:
 		header = f.readline()
 		header = header.strip().split(',')
-		if 'value_hrf' in header:
-			data_column = header.index('value_hrf') + 1
-		elif 'value_hrf_average' in header:
-			data_column = header.index('value_hrf_average') + 1
-		elif 'value_hrf_moving_average' in header:
-			data_column = header.index('value_hrf_moving_average') + 1
-	print
+		for string in header_list:
+			if string in header:
+				data_column = header.index(string) + 1
 
 	temp_data_path = os.path.join(data_directory,'tmp')
 	if not os.path.exists(temp_data_path):
@@ -465,7 +457,7 @@ if __name__ == '__main__':
 
 	ylabel = ''
 	plot = ''
-	tics = ''
+	tics = 'tics'
 	multiplot = ''
 	x_range = "['{start}':'{end}']".format(start=start_date,end=end_date)
 	time_period = '{} to {}'.format(start_date,end_date)
@@ -665,6 +657,7 @@ unset multiplot
 
 	if '_' in n_string:
 		n_string = n_string.replace('_','\\\\_')
+
 
 	context = { # in alphabetical order based on key
 		# 'address':address,
