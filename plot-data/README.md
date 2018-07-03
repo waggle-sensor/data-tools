@@ -186,7 +186,7 @@ The warning that no data exists for a certain date lets you know why the plot mi
 And generate the following plot:  
 <img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/output.png">
 
-######Example 2
+###### Example 2
 Plot temperature data from sensor bmp180, subsystem metsense, node 001e0610ba46 and the ontology /sensing/meteorology/temperature for node 001e0610ba8f, from 2018-06-20 to 2018-06-23 to example2.png using data from from the AoT Chicago complete dataset.
 The command to generate this plot:  
 `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example2.png -t 2018-06-20 2018-06-23 -p 001e0610ba46 temperature bmp180 metsense -n 001e0610ba8f /sensing/meteorology/temperature -e 10`  
@@ -251,7 +251,7 @@ And generate the following plot:
 
 ##### Using Plot Settings Arguments
 
-######Example 3
+###### Example 3
 Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png overlaid in one plot.  
 The command to generate this plot:  
 `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -v -e 8`  
@@ -296,7 +296,8 @@ And generate the following plot:
 <img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example3.png">
 
 
-Example 4: Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png laid out in a 2 by 2 grid.  
+###### Example 4
+Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png laid out in a 2 by 2 grid.  
 The command to generate this plot:  
 `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example4.png -l 2 2 -F 12 -e 8`  
 The `-F` option is used here to make the titles look nicer and not take up so much room to leave more space for the plots.  
@@ -311,7 +312,8 @@ Plotting data to ./plots/example4.png
 And generate the following plot:  
 <img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example4.png">
 
-Example 5: Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png laid out in a 1 by 4 grid.  
+###### Example 5
+Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png laid out in a 1 by 4 grid.  
 The command to generate this plot:  
 `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example5-smalltext.png -l 1 4 -F 10 -f 8 -e 7`  
 Here, the `-F` and `-f` options are used to keep the plot title from overlapping and to keep the plot keys from going outside their plots.  
