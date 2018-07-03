@@ -6,7 +6,7 @@ This tool requires that the user has Python3 installed and was tested on a deskt
 ## Description
 This tool will reduce the amount of data from a complete node data set by averaging sensor values over a specified time period.
 
-The command line tool dataReduction.py takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day). This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a new reducedData.csv file (timestamps are written out as halfway between the interval specified by the user). The final output of the dataReduction.py tool will be a directory that contains the reduced data set (reducedData.csv) and the extra metadata files (nodes.csv, provenance.csv, README.md, and sensors.csv) from the passed in unpackaged complete node data set directory path.
+The command line tool dataReduction.py takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day). This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a new reducedData.csv file (timestamps are written out as halfway between the interval specified by the user). The final output of the dataReduction.py tool will be a directory that contains the reduced data set (reducedData.csv) and extra metadata files (nodes.csv, provenance.csv, and sensors.csv) along with a modified README (reducedREADME.md) from the passed in unpackaged complete node data set directory path.
 
 ## How to Use dataReduction.py
 
@@ -39,12 +39,12 @@ Errors will be specified for user error such as: not all of the parameters being
 
 #### Command:
 ``` 
-waggle-student@ermac:~/summer2018/morrison/dataReductionTool$ python3 dataReduction.py -i smallData.csv -t 10m -o updatedOut.csv
+waggle-student@ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -d /media/waggle-student/SDUltra/AoT_Chicago.complete.2018-06-19 -t 10m
 Generating...
-Done. Took 43.16s to complete.
+Done. Took 7.01s to complete.
 ```
 
-#### Output:
+#### Reduced Data Output:
 
 ```
 2018/06/13 21:05:00,001e0610e537,alphasense,opc_n2,fw,NA,1,0
@@ -95,12 +95,12 @@ Done. Took 43.16s to complete.
 #### Command:
 
 ```
-waggle-student@ermac:~/summer2018/morrison/dataReductionTool$ python3 dataReduction.py -i smallData.csv -t 1h -o updatedOut.csv
+waggle-student@ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -d /media/waggle-student/SDUltra/AoT_Chicago.complete.2018-06-19 -t 1h
 Generating...
-Done. Took 42.64s to complete.
+Done. Took 6.77s to complete.
 ```
 
-#### Output: 
+#### Reduced Data Output: 
 
 ```
 2018/06/13 21:30:00,001e0610e537,alphasense,opc_n2,fw,NA,1,0
@@ -150,15 +150,14 @@ Done. Took 42.64s to complete.
 #### Command:
 
 ```
-adam@Inspiron:~/summer2018/morrison/dataReductionTool$ python3 dataReduction.py -i node001e0610ba46.csv -t 1d -o updatedOut.csv
+waggle-student@ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -d /media/waggle-student/SDUltra/AoT_Chicago.complete.2018-06-19 -t 1d
 Generating...
-Done. Took 33.41s to complete.
+Done. Took 7.03s to complete.
 ```
 
-#### Output: 
+#### Reduced Data Output: 
 
 ```
-timestamp,node_id,subsystem,sensor,parameter,sum,count,average,min,max
 2018/06/09 12:00:00,001e0610ba46,lightsense,hmc5883l,magnetic_field_x,-1254095.4310000015,3437,-364.88,-454.545,-272.727
 2018/06/09 12:00:00,001e0610ba46,lightsense,hmc5883l,magnetic_field_z,-299912.2360000005,3437,-87.26,-294.898,127.551
 2018/06/09 12:00:00,001e0610ba46,lightsense,hmc5883l,magnetic_field_y,388910.87799999997,3437,113.15,-84.545,299.091
