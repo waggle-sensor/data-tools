@@ -20,7 +20,7 @@ def validate(date_text):
     try:
         datetime.datetime.strptime(date_text, '%Y-%m-%d')
     except ValueError:
-        print("[ERROR] {} uses incorrect date format, should be YYYY-MM-DD".format(date_text))
+        print("[ERROR] {} is invalid, format should be YYYY-MM-DD".format(date_text))
         exit(1)
 
 if __name__ == '__main__':
@@ -76,6 +76,9 @@ if __name__ == '__main__':
 
 	dicts = getSensors(data_directory)
 	parameter_to_sensor_subsystem_dict = dicts[0]
+	for key in parameter_to_sensor_subsystem_dict:
+		print(key,':',parameter_to_sensor_subsystem_dict[key])
+	# print(parameter_to_sensor_subsystem_dict)
 	ontology_dict = dicts[1]
 	triplet_to_hrf_unit_dict = dicts[4]
 
@@ -341,7 +344,7 @@ if __name__ == '__main__':
 						print('Extracting {} data from node {}...'.format(triplet[0],node))
 						grep(and_pattern_list[i],input_path,extract_path,useAnd=True)
 						cut(',','1,{}'.format(data_column),extract_path,extract_path)
-					if os.stat(extract_path).st_size <= 56:
+					if os.stat(extract_path).st_size == 0:
 						print('[WARNING] No {} data from sensor {} in subsystem {} for node {} on {} exists'.format(triplet[0],triplet[1],triplet[2],node,date))
 						os.unlink(extract_path)
 			if args.ontology and node in node_to_ontology_dict:
@@ -353,7 +356,7 @@ if __name__ == '__main__':
 						print('Extracting {} data from node {}...'.format(triplet[0],node))
 						grep(and_pattern_list[i],input_path,extract_path,useAnd=True)
 						cut(',','1,{}'.format(data_column),extract_path,extract_path)
-					if os.stat(extract_path).st_size <= 56:
+					if os.stat(extract_path).st_size == 0:
 						print('[WARNING] No {} data from sensor {} in subsystem {} for node {} on {} exists'.format(triplet[0],triplet[1],triplet[2],node,date))
 						os.unlink(extract_path)
 	if os.path.exists(temp_extract_path):
