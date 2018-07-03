@@ -32,7 +32,7 @@ To generate a simple plot run `python3 gen_custom_plots.py -i data_directory_pat
 
 
 For example: `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02/ -t 2018-06-23 2018-06-23 -p 001e0610ba46 temperature bmp180 metsense`  
-This command would generate a plot containing temperature data from the sensor bmp180 in the subsystem metsense for the node 001e0610ba46 from 00:00:00 June 23, 2018 to 23:59:59 June 23, 2018 using the AoT Chicago complete dataset from July 2, 2018.
+This command would generate a plot containing temperature data from the sensor bmp180 in the subsystem metsense for the node 001e0610ba46 from 00:00:00 June 23, 2018 to 23:59:59 June 23, 2018 using the AoT Chicago complete dataset from July 2, 2018.  
 The generated plot looks like this:
 <img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example.png">
 
@@ -190,6 +190,7 @@ And generate the following plot:
 Plot temperature data from sensor bmp180, subsystem metsense, node 001e0610ba46 and the ontology /sensing/meteorology/temperature for node 001e0610ba8f, from 2018-06-20 to 2018-06-23 to example2.png using data from from the AoT Chicago complete dataset.
 The command to generate this plot:  
 `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example2.png -t 2018-06-20 2018-06-23 -p 001e0610ba46 temperature bmp180 metsense -n 001e0610ba8f /sensing/meteorology/temperature -e 10`  
+The `-e 10` option is needed because otherwise the text for the provenance is too long for the image.  
 Will generate terminal output:  
 ```
 Extracting temperature data from node 001e0610ba46...
@@ -242,7 +243,6 @@ Combining data for 001e0610ba8f temperature tmp112 metsense
 Combining data for 001e0610ba8f temperature tsys01 metsense
 Plotting data to ./plots/example2.png
 ```
-The `-e 10` option was need because otherwise the text for the provenance was too long for the image.  
 The data for node 001e0610ba46 is not extracted because it was stored from when the plot in Example 1 was generated.  
 
 
@@ -258,6 +258,7 @@ The command to generate this plot:
 or  
 `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -e 8`  
 Either command will work because the tool defaults to overlaying the data.  
+Again, the -e option is used so that the command fits in the image.  
 Will generate terminal output:  
 ```
 Extracting data for node 001e0610bbf9 on 2018/06/20...
@@ -290,8 +291,7 @@ Combining data for 001e0610bc10 pressure bmp180 metsense
 Combining data for 001e0610bc10 humidity htu21d metsense
 IT WORKS
 Plotting data to ./plots/example3.png
-```
-Again, the -e option is used so that the command fits in the image.  
+```  
 And generate the following plot:  
 <img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example3.png">
 
