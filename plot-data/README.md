@@ -8,7 +8,7 @@ This tool generates plots based on command line input. Given a directory with da
 
 This tool depends on **python3**, **numpy** and **pandas** packages for python3, as well as **gnuplot**. Please make sure they are installed in the system where they are intended to be used.  
 The bash shell scripts this tool uses require a Linux or Mac OS X environment to run.  
-Plotting also requires that the file `data.csv` has the following columns:  
+Plotting also requires that the file `data.csv` has the following columns:
 * `timestamp`
 * `node_id`
 * `subsystem`
