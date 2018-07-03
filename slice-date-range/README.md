@@ -9,7 +9,7 @@ This tool will take a project directory and a date range:
 ```
 
 and produce a new project folder `project_dir.from-start_date-to-end_date` with
-a data.csv.gz containing data only from within the specified date range.
+a `data.csv.gz` file containing data only from within the specified date range.
 
 ## Example
 
