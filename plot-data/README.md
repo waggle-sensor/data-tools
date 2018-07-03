@@ -7,16 +7,34 @@ This tool generates plots based on command line input. Given a directory with da
 ## Requirements
 
 This tool depends on **python3**, **numpy** and **pandas** packages for python3, as well as **gnuplot**. Please make sure they are installed in the system where they are intended to be used.  
-The bash shell scripts this tool uses require a Linux or Mac OS X environment to run.
+The bash shell scripts this tool uses require a Linux or Mac OS X environment to run.  
+Plotting also requires that the file `data.csv` has the following columns:  
+	* `timestamp`
+	* `node_id`
+	* `subsystem`
+	* `sensor`
+	* `paramater`
+	* One of:
+		* `value_hrf`
+		* `value_hrf_average`
+		* `value_hrf_moving_average`
 
 ## How to Use
 
 To retrieve data, go to https://github.com/waggle-sensor/waggle/tree/master/data, download your desired data set, and follow the instructions to decompress the data.  
+To get the scripts, clone this repository from `https://github.com/waggle-sensor/data-tools.git`.  
+In order to run the scripts, use the command line to navigate to the `plot-data` directory within the repository.  
 To generate a simple plot run `python3 gen_custom_plots.py -i data_directory_path -t start_date end_date -p node_id parameter sensor subsystem`  
 `data_directory_path` is the path to the directory created when untaring the archive, or any other directory containing the required files, listed above.  
 `start_date` and `end_date` are dates in the format YYYY-MM-DD. Data is plotted from 00:00:00 on the start date to 23:59:59 on the end date.  
 `node_id` is the id of the node you want to plot data from. A list of nodes can be found in the `nodes.csv` file included with the datasets.
-`parameter`, `sensor` and `subsystem` specify exactly what data you want from the node. A list of these can be found in the `sensors.csv` file included with the datasets.
+`parameter`, `sensor` and `subsystem` specify exactly what data you want from the node. A list of these can be found in the `sensors.csv` file included with the datasets.  
+
+
+For example: `python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02/ -t 2018-06-23 2018-06-23 -p 001e0610ba46 temperature bmp180 metsense`  
+This command would generate a plot containing temperature data from the sensor bmp180 in the subsystem metsense for the node 001e0610ba46 from 00:00:00 June 23, 2018 to 23:59:59 June 23, 2018 using the AoT Chicago complete dataset from July 2, 2018.
+The generated plot looks like this:
+<img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example.png">
 
 ## Documentation
 
@@ -26,7 +44,7 @@ https://github.com/waggle-sensor/waggle/tree/master/data contains a list of data
 
 ### Plot Generation
 
-`gen_custom_plots.py` extracts the specified data from the files created by `fileMaker.sh` and combines the data into plottable datasets. Then the data is plotted as specified by command line arguments. The data extracted each time the tool is run is stored in daily slices so that it does not need to be extracted again, because extracting the data is very time consuming. If data is already extracted for a given plot, the files will just be combined into a final plottable dataset. If only some of the specified data is already extracted, the rest of the data will be extracted, skipping over the data that already exists.
+`gen_custom_plots.py` extracts the specified data from `data.csv` in the data directory and combines the data into plottable datasets. Then the data is plotted as specified by command line arguments. The data extracted each time the tool is run is stored in daily slices in a folder called `tmp` in the data directory so that it does not need to be extracted again, because extracting the data is very time consuming. If data is already extracted for a given plot, the files will just be combined into a final plottable dataset. If only some of the specified data is already extracted, the rest of the data will be extracted, skipping over the data that already exists.
 
 #### Command Line Arguments
 
@@ -129,13 +147,27 @@ optional arguments:
   -h, --help            show this help message and exit
 ```
 
+#### Examples
+
 ##### Simple Plots
 
-Example 1: Plot temperature data from sensor bmp180, subsystem metsense, node 001e0610ba46, from 2018-06-20 to 2018-06-23. 
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610ba46 temperature bmp180 metsense`  
+###### Example 1
+Plot temperature data from sensor bmp180, subsystem metsense, node 001e0610ba46, from 2018-06-20 to 2018-06-23 using data from the AoT Chicago complete dataset.  
+`python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -t 2018-06-20 2018-06-23 -p 001e0610ba46 temperature bmp180 metsense`
 Will generate terminal output:  
 ```
 Extracting data for all dates in time frame...
+Extracting data for 2018/06/17...
+Extracting data for node 001e0610ba46 on 2018/06/17...
+Extracting temperature data from node 001e0610ba46...
+[WARNING] No temperature data from sensor bmp180 in subsystem metsense for node 001e0610ba46 on 2018/06/17 exists
+Extracting data for 2018/06/18...
+Extracting data for node 001e0610ba46 on 2018/06/18...
+Extracting temperature data from node 001e0610ba46...
+Extracting data for 2018/06/19...
+Extracting data for node 001e0610ba46 on 2018/06/19...
+Extracting temperature data from node 001e0610ba46...
+Extracting data for 2018/06/20...
 Extracting data for node 001e0610ba46 on 2018/06/20...
 Extracting temperature data from node 001e0610ba46...
 Extracting data for 2018/06/21...
@@ -144,44 +176,87 @@ Extracting temperature data from node 001e0610ba46...
 Extracting data for 2018/06/22...
 Extracting data for node 001e0610ba46 on 2018/06/22...
 Extracting temperature data from node 001e0610ba46...
+Extracting data for 2018/06/23...
 Extracting data for node 001e0610ba46 on 2018/06/23...
 Extracting temperature data from node 001e0610ba46...
 Combining data for 001e0610ba46 temperature bmp180 metsense
 Plotting data to ./plots/output.png
 ```  
+The warning that no data exists for a certain date lets you know why the plot might not have certain data points.
 And generate the following plot:  
-![output.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/output.png)  
-<img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/output.png?token=AUW0UvvYalBBgwjTQBNj6FSa1vF0Fpnmks5bPT9BwA%3D%3D">
+<img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/output.png">
 
-Example 2: Plot temperature data from sensor bmp180, subsystem metsense, node 001e0610ba46 and node 001e0610ba8f, from 2018-06-20 to 2018-06-23 to example2.png.
+######Example 2
+Plot temperature data from sensor bmp180, subsystem metsense, node 001e0610ba46 and the ontology /sensing/meteorology/temperature for node 001e0610ba8f, from 2018-06-20 to 2018-06-23 to example2.png using data from from the AoT Chicago complete dataset.
 The command to generate this plot:  
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610ba46 temperature bmp180 metsense -p 001e0610ba8f temperature bmp180 metsense -o example2.png`  
+`python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example2.png -t 2018-06-20 2018-06-23 -p 001e0610ba46 temperature bmp180 metsense -n 001e0610ba8f /sensing/meteorology/temperature -e 10`  
 Will generate terminal output:  
 ```
-Extracting data for node 001e0610ba8f on 2018/06/20...
+Extracting temperature data from node 001e0610ba46...
+[WARNING] No temperature data from sensor bmp180 in subsystem metsense for node 001e0610ba46 on 2018/06/17 exists
 Extracting temperature data from node 001e0610ba8f...
-Extracting data for node 001e0610ba8f on 2018/06/21...
+[WARNING] No temperature data from sensor bmp180 in subsystem metsense for node 001e0610ba8f on 2018/06/17 exists
 Extracting temperature data from node 001e0610ba8f...
-Extracting data for node 001e0610ba8f on 2018/06/22...
+[WARNING] No temperature data from sensor htu21d in subsystem metsense for node 001e0610ba8f on 2018/06/17 exists
 Extracting temperature data from node 001e0610ba8f...
-Extracting data for node 001e0610ba8f on 2018/06/23...
+[WARNING] No temperature data from sensor pr103j2 in subsystem metsense for node 001e0610ba8f on 2018/06/17 exists
+Extracting temperature data from node 001e0610ba8f...
+[WARNING] No temperature data from sensor tmp112 in subsystem metsense for node 001e0610ba8f on 2018/06/17 exists
+Extracting temperature data from node 001e0610ba8f...
+[WARNING] No temperature data from sensor tsys01 in subsystem metsense for node 001e0610ba8f on 2018/06/17 exists
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
+Extracting temperature data from node 001e0610ba8f...
 Extracting temperature data from node 001e0610ba8f...
 Combining data for 001e0610ba46 temperature bmp180 metsense
 Combining data for 001e0610ba8f temperature bmp180 metsense
+Combining data for 001e0610ba8f temperature htu21d metsense
+Combining data for 001e0610ba8f temperature pr103j2 metsense
+Combining data for 001e0610ba8f temperature tmp112 metsense
+Combining data for 001e0610ba8f temperature tsys01 metsense
 Plotting data to ./plots/example2.png
 ```
+The `-e 10` option was need because otherwise the text for the provenance was too long for the image.  
 The data for node 001e0610ba46 is not extracted because it was stored from when the plot in Example 1 was generated.  
+
+
 And generate the following plot:  
-![example2.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/example2.png)  
-<img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/example2.png?token=AUW0Ur0XhNAzABN0xcQKDru_vkjuiw14ks5bPUBNwA%3D%3D">
+<img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example2.png">
 
 ##### Using Plot Settings Arguments
 
-Example 3: Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png overlaid in one plot.  
+######Example 3
+Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png overlaid in one plot.  
 The command to generate this plot:  
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example3.png -v`  
+`python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -v -e 8`  
 or  
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example3.png`  
+`python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -e 8`  
 Either command will work because the tool defaults to overlaying the data.  
 Will generate terminal output:  
 ```
@@ -203,38 +278,28 @@ Extracting humidity data from node 001e0610bbf9...
 Extracting data for node 001e0610bc10 on 2018/06/22...
 Extracting pressure data from node 001e0610bc10...
 Extracting humidity data from node 001e0610bc10...
+Extracting data for node 001e0610bbf9 on 2018/06/23...
 Extracting pressure data from node 001e0610bbf9...
 Extracting humidity data from node 001e0610bbf9...
+Extracting data for node 001e0610bc10 on 2018/06/23...
 Extracting pressure data from node 001e0610bc10...
 Extracting humidity data from node 001e0610bc10...
 Combining data for 001e0610bbf9 pressure bmp180 metsense
 Combining data for 001e0610bbf9 humidity htu21d metsense
 Combining data for 001e0610bc10 pressure bmp180 metsense
 Combining data for 001e0610bc10 humidity htu21d metsense
-Plotting data to ./plots/output.png
+IT WORKS
+Plotting data to ./plots/example3.png
 ```
+Again, the -e option is used so that the command fits in the image.  
 And generate the following plot:  
-![example3.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/example3.png)  
-<img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/example3.png?token=AUW0UvJfT41l8Vs6f3DyZDuKjgq6aS8Oks5bPUYUwA%3D%3D">
+<img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example3.png">
 
-The command for this plot does not quite fit on the plot, so we can change the size of the plot title to make it fit using the `-F` option:  
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example3-smalltitle.png -v -F 12`  
-Will generate terminal output:  
-```
-Combining data for 001e0610bbf9 pressure bmp180 metsense
-Combining data for 001e0610bbf9 humidity htu21d metsense
-Combining data for 001e0610bc10 pressure bmp180 metsense
-Combining data for 001e0610bc10 humidity htu21d metsense
-Plotting data to ./plots/example3-smalltitle.png
-```
-And generate the following plot:  
-![example3-smalltitle.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/example3-smalltitle.png)
-<img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/example3-smalltitle.png?token=AUW0Urm9ZYgR16hVwrUOOQpAwx1RCW6nks5bPUZgwA%3D%3D">
 
 Example 4: Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png laid out in a 2 by 2 grid.  
 The command to generate this plot:  
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example4.png -l 2 2 -F 12`  
-The `-F` option is used here again because the command is similar in length to example 3, so we want it to fit the first time.
+`python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example4.png -l 2 2 -F 12 -e 8`  
+The `-F` option is used here to make the titles look nicer and not take up so much room to leave more space for the plots.  
 Will generate terminal output:  
 ```
 Combining data for 001e0610bbf9 pressure bmp180 metsense
@@ -244,13 +309,12 @@ Combining data for 001e0610bc10 humidity htu21d metsense
 Plotting data to ./plots/example4.png
 ```
 And generate the following plot:  
-![example4.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/example4.png)  
-<img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/example4.png?token=AUW0UkmJmuJjMsSWv0xVmxiUMShsVQvcks5bPUgxwA%3D%3D">
+<img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example4.png">
 
 Example 5: Plot pressure from sensor bmp180 subsystem metsense for node 001e0610bbf9 and 001e0610bc10 and humidity for sensor htu21d subsystem metsense for node 001e0610bbf9 and 001e0610bc10 from 2018-06-20 to 2018-06-23 to example3.png laid out in a 1 by 4 grid.  
 The command to generate this plot:  
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example5.png -l 1 4 -F 12`  
-
+`python3 gen_custom_plots.py -i AoT_Chicago.complete.2018-07-02 -o example3.png -t 2018-06-20 2018-06-23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example5-smalltext.png -l 1 4 -F 10 -f 8 -e 7`  
+Here, the `-F` and `-f` options are used to keep the plot title from overlapping and to keep the plot keys from going outside their plots.  
 Will generate terminal output:  
 ```
 Combining data for 001e0610bbf9 pressure bmp180 metsense
@@ -260,25 +324,12 @@ Combining data for 001e0610bc10 humidity htu21d metsense
 Plotting data to ./plots/example5.png
 ```
 And generate the following plot:  
-![example5.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/example5.png) 
-<img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/example5.png?token=AUW0Un4aWKgWrrqJvNifnvyjCEbYXvF9ks5bPUsQwA%3D%3D"> 
-
-Both the titles of the plots and the text within the plots are too large, so we need to decrease the font size of both using `-F` for the titles, and `-f` for the plot text:  
-`python3 gen_custom_plots.py -t 2018/06/20 2018/06/23 -p 001e0610bbf9 pressure bmp180 metsense -p 001e0610bc10 pressure bmp180 metsense -p 001e0610bbf9 humidity htu21d metsense -p  001e0610bc10 humidity htu21d metsense -o example5-smalltext.png -l 1 4 -F 10 -f 8`  
-Will generate terminal output:  
-```
-Combining data for 001e0610bbf9 pressure bmp180 metsense
-Combining data for 001e0610bbf9 humidity htu21d metsense
-Combining data for 001e0610bc10 pressure bmp180 metsense
-Combining data for 001e0610bc10 humidity htu21d metsense
-Plotting data to ./plots/example5-smalltext.png
-```
-And generate the following plot:  
-![example5-smalltext.png](https://github.com/waggle-sensor/summer2018/tree/master/dawnkaski/custom_plots/examples/example5-smalltext.png)  
-<img src="https://raw.githubusercontent.com/waggle-sensor/summer2018/master/dawnkaski/custom_plots/examples/example5-smalltext.png?token=AUW0UhNoqOKXigc0IxxHkVy76bcOtms2ks5bPUtWwA%3D%3D">  
+<img src="https://raw.githubusercontent.com/waggle-sensor/data-tools/master/plot-data/examples/example5.png">
 
 
-If you want to trim outlying data (greater than 3 standard deviations away from the mean) you can use the `-r` option.  
+When plotting ontologies using `-n`, each ontology will be plotted in 1 plot. So if you wanted to plot 3 things with `-p` and 1 ontology in a 2 by 2 layout, there would be 3 plots containing one dataset and one containing all the data for the ontology.  
+
+If you want to trim outlying data (greater than 3 or -3 standard deviations away from the mean) you can use the `-r` option.  
 If you want to plot data using a log scale, you can use the `-s` option.
 
 
