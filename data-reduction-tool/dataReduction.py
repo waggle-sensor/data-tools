@@ -52,7 +52,6 @@ def setup():
     #set the input file (full path to file) 
     inputFile = dirPath+"/data.csv"
 
-
     #make sure user specifies a time period
     if args.period == None:
         print("Error: No time value given. Must be an int followed by 's','m','h',or 'd'.")
@@ -85,6 +84,7 @@ def setup():
     else:
         period = numInterval
 
+    #make sure verbose option (when included) includes an integer with it
     if args.numLines is not None:
         printLines = True
         try:
@@ -138,6 +138,7 @@ def createData():
         reader = csv.DictReader(x.replace('\0', 'NullVal') for x in file)
         fieldNames = reader.fieldnames
 
+        #sensor values can come from the original data set or the moving average tool; otherwise, the tool cannot function
         for i in range(0,len(fieldNames)):
             if (fieldNames[i] == "value_hrf"):
                 hrfTitle = "value_hrf"
@@ -145,7 +146,7 @@ def createData():
                 hrfTitle = "value_hrf_moving_average"
 
         if (hrfTitle != "value_hrf" and hrfTitle != "value_hrf_moving_average"):
-            print("Error: Could not find appropriate value header.")
+            print("Error: Could not find appropriate value header. CSV file headers must include either 'value_hrf' or 'value_hrf_moving_average'.")
             exit(1)
 
         #go through each line of the input .csv file
@@ -160,7 +161,6 @@ def createData():
             #start the output evenly at the day, hour, or minute,
             if (count == 1):
                 
-                #change this to getSeconds, minutes, etc with datetime
                 hours = int(datetime.datetime.strptime(row['timestamp'], '%Y/%m/%d %H:%M:%S').hour)
                 minutes = int(datetime.datetime.strptime(row['timestamp'], '%Y/%m/%d %H:%M:%S').minute)
                 seconds = int(datetime.datetime.strptime(row['timestamp'], '%Y/%m/%d %H:%M:%S').second)
@@ -184,7 +184,13 @@ def createData():
 
             #delete value columns so that when getting all columns, they can just be used as the dict key
             #(value_raw will most likely not be used by end user and does not make sense to keep track of)
-            del row[hrfTitle],row['value_raw']
+            del row[hrfTitle]
+
+            #delete the value_raw column if it exists
+            try:
+                del row['value_raw']
+            except:
+                pass
 
             #iterate through the dictionary to generate the outputDict for each time period
             for k,v in row.items():
@@ -195,7 +201,7 @@ def createData():
                 if k == 'timestamp':
                     valStr = valStr + str(datetime.datetime.utcfromtimestamp(timeRange["endTime"] - period/2).strftime('%Y/%m/%d %H:%M:%S'))
                 else:
-                    valStr = valStr + ',' + v
+                    valStr = valStr + ',' + str(v)
 
             #if the key already exists (meaning the row has already been made and now the current value_hrf (or value_hrf_moving_average) just needs to be added to the sum and the count value needs to be incremented)
             #then try to set the value of the dictionary key (key is in the format: timestamp,node_id,subsystem,sensor,parameter) - skips any values that are 'NA' or are a mix of letters and numbers
@@ -233,12 +239,17 @@ def writeFile():
     open(outputFile,'w').close()
 
     #now should have a dictionary with key value pairs in the following format (keys are shown as their titles but in the actual dictionary are the actual values):
-    #{'timestamp,node_id,subsystem,sensor,parameter':{'sum':sum,'count':count}} or {'timestamp,node_id,subsystem,sensor,parameter':{'sum':sum,'count':count,'min':min,'max':max}}
+    #{'timestamp,node_id,subsystem,sensor,parameter':{'sum':sum,'count':count,'min':min,'max':max}}
 
     #update the output csv file's first line with the field names (removing 'value_hrf' (or 'value_hrf_moving_average') and 'value_raw') in the following format:
     #timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average or timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average,value_hrf_min,value_hrf_max
     with open (outputFile,'w') as f:
-        fieldNames.remove('value_raw')
+        #delete the value_raw column if it exists
+        try:
+            fieldNames.remove('value_raw')
+        except:
+            pass
+        
         fieldNames.remove(hrfTitle)
 
         for i in range(0,len(fieldNames)):
@@ -269,6 +280,7 @@ def writeFile():
                 f.write(str(key)+','+str(val['sum'])+','+str(val['count'])+','+str(val['average'])+'\n')
 
 def copyDigestFiles():
+    
     global dirPath
     global subDir
 
@@ -284,7 +296,7 @@ def copyDigestFiles():
         print('Error: %s' % e.strerror)
 
     #modify the README, create new README, delete old README
-    modifierText = """## NOTE: This README has been modifed by dataReduction.sh, and the data included in this directory is now reduced.\n
+    modifierText = """## NOTE: This README has been modifed by dataReduction.py, and the data included in this directory is now reduced.\n
 Within this README, the 'data.csv.gz' archive is referred to as the compressed CSV containing the sensor data file (data.csv). The data.csv file from this compressed archive has been replaced by the reduced data.csv.
 All other metadata mentioned in this README remains the same, except for the provenance metadata and the list of columns in data.csv.gz. Since this file no longer exists, these columns are incorrect.
 The columns remain the same but 'value_raw' and 'value_hrf' do not exist in the new reduced data.csv file; instead, the columns now include either 'value_hrf_sum,value_hrf_count,value_hrf_average', or 'value_hrf_sum,value_hrf_count,value_hrf_average,value_hrf_min,value_hrf_max'
@@ -299,10 +311,9 @@ New Provenance - This data was reduced and combined with the original digest met
 
     try:
         subprocess.run(["rm " + oldReadme.replace(" ","\ ")], shell=True, check=True)
+        subprocess.run(["mv " + newReadme.replace(" ","\ ") + " README.md" ], shell=True, check=True)
     except subprocess.CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-    
-    
 
 if __name__ == "__main__":
     
