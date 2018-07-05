@@ -204,8 +204,11 @@ When typing on the terminal, the tool takes in two required parameters (input di
 **Note:** The reduced data.csv output file will have the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average``` all the time. If there are more than a certain number of values (1000 right now) in any of the averaging periods, the tool will output the reduced data.csv file with the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf__sum,value_hrf_count,value_hrf_average,value_hrf__min,value_hrf_max```. It includes a minimum and maximum value per averaging period that is useful when graphing or analyzing the output data.
 
 Terminal command format should be like these examples:
+
 ```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m``` 
+
 or 
+
 ```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m -v 1000```
 
 Typing ```-h``` or ```--help``` as a parameter when using this tool will pull up the help: ```python3 dataReduction.py -h```.
