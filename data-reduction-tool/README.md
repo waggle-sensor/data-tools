@@ -6,7 +6,11 @@ This tool requires that the user has Python3 installed and was tested on a deskt
 ## Description
 This tool will reduce the amount of data from a complete node data set by averaging sensor values over a specified time period.
 
-The command line tool dataReduction.py takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day). This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a new reduced data.csv file (timestamps are written out as halfway between the interval specified by the user). The final output of the dataReduction.py tool will be a sub directory placed in the passed in directory that contains the reduced data set (reduced data.csv) and extra metadata files (nodes.csv, provenance.csv, and sensors.csv) along with a modified README (README.md).
+### Input: 
+The command line tool `dataReduction.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv(uncompress the data.csv.gz file before using the tool), nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day).
+
+### Output:
+This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a new reduced data.csv file (timestamps are written out as halfway between the interval specified by the user). The final output of the dataReduction.py tool will be a sub directory placed in the passed in directory that contains the reduced data set (reduced data.csv) and extra metadata files (nodes.csv, provenance.csv, and sensors.csv) along with a modified README (README.md).
 
 ## How to Use dataReduction.py
 
@@ -39,7 +43,7 @@ Errors will be specified for user error such as: not all of the parameters being
 
 #### Command:
 ``` 
-waggle-student@ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -i /media/waggle-student/SDUltra/AoT_Chicago.complete.2018-06-19 -t 10m
+ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -i ../AoT_Chicago.complete.2018-06-19 -t 10m
 Generating...
 Done. Took 7.01s to complete.
 ```
@@ -95,7 +99,7 @@ Done. Took 7.01s to complete.
 #### Command:
 
 ```
-waggle-student@ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -i /media/waggle-student/SDUltra/AoT_Chicago.complete.2018-06-19 -t 1h
+ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -i ../AoT_Chicago.complete.2018-06-19 -t 1h
 Generating...
 Done. Took 6.77s to complete.
 ```
@@ -150,7 +154,7 @@ Done. Took 6.77s to complete.
 #### Command:
 
 ```
-waggle-student@ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -i /media/waggle-student/SDUltra/AoT_Chicago.complete.2018-06-19 -t 1d
+ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -i ../AoT_Chicago.complete.2018-06-19 -t 1d
 Generating...
 Done. Took 7.03s to complete.
 ```
