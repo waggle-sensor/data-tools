@@ -33,14 +33,12 @@ Typing ```-h``` or ```--help``` as a parameter when using this tool will pull up
 Errors will be specified for user error such as: not all of the parameters being filled in when using the tool, not specifying an input file, specifying an input or output file that is not .csv format, etc.
 
 ## Step-by-Step Instructions for Reducing Data
-1. First follow the instructions listed at this link: ```https://github.com/waggle-sensor/waggle/tree/master/data``` to download and unpackage a complete node dataset. Place the final, entirely unpackaged directory in the desired location on your computer (make sure to complete the step that unpackages the data.csv.gz archive).
-2. Clone or download the data-tools directory at this link: ```https://github.com/waggle-sensor/data-tools``` and move it to the desired location on your computer.
-3. From the command line, navigate to the data-reduction-tool directory that is inside the data-tools directory downloaded from step 2.
-4. Run the dataReduction.py tool from the command line:
+1. Download and unpackage a complete node dataset. Make sure to complete the step that unpackages the data.csv.gz archive.
+2. Run the dataReduction.py tool from the command line:
 
 ```python3 dataReduction.py -i /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```
 
-Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. Adding ```-v #``` with ```#``` replaced by an integer will print the number of lines that have been parsed through (though this causes the progam to take more time to reduce data). Remember, the directory path specified must contain the following five files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. 
+Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. The ```-v #``` option with ```#``` replaced by an integer can be used to print a line count after every ```#``` number of lines have been parsed (this causes the progam to take more time to reduce data). 
 
 ## Examples
 
