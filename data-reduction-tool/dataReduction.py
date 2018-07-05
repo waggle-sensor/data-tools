@@ -24,6 +24,7 @@ def setup():
     global outputFile
     global dirPath
     global subDir
+    global fileName
     global period
     global printLines
     global lines
@@ -93,18 +94,11 @@ def setup():
             print("Error: Verbose option input must be an integer.")
             exit(1)
 
-    #create the sub directory that will contain the reduced data and the copied metadata files
+    #create path names
     dirList = dirPath.split("/")
     parentDir = dirList[len(dirList)-1]
     subDir = dirPath + "/" + parentDir + "_reduced_data_" + str(args.period)
     fileName = subDir + "/data.csv"
-    
-    if not os.path.exists(os.path.dirname(fileName)):
-        try:
-            os.makedirs(os.path.dirname(fileName))
-        except OSError as exc:
-            if exc.errno != errno.EEXIST:
-                raise
 
     #set the output file (full path to file)
     outputFile = fileName
@@ -126,7 +120,6 @@ def createData():
     newVal = ''
     currMax = 0
     currMin = 0
-    
 
     timeRange = {"beginTime":0,"endTime":0}
     
@@ -179,16 +172,27 @@ def createData():
                 
             #create the temporary dictionary (uses each sensor's value_hrf (or value_hrf_moving_average) as part of the value for each of the keys in outputDict) to hold
             #the sum, count, min, and max of the sensor hrf values over the specified time period
-            newVal = row[hrfTitle]
+            if (',' in row[hrfTitle]):
+                newVal = '"'+ row[hrfTitle] +'"' #corrects error if commas are included in a sensor value
+            else:
+                newVal = row[hrfTitle]
             temp = {'sum':newVal,'count':1, 'max':newVal, 'min':newVal}
 
             #delete value columns so that when getting all columns, they can just be used as the dict key
             #(value_raw will most likely not be used by end user and does not make sense to keep track of)
             del row[hrfTitle]
 
-            #delete the value_raw column if it exists
+            #delete the value_raw, value_hrf_sum, and value_hrf_count columns if they exist
             try:
                 del row['value_raw']
+            except:
+                pass
+            try:
+                del row['value_hrf_sum']
+            except:
+                pass
+            try:
+                del row['value_hrf_count']
             except:
                 pass
 
@@ -214,15 +218,15 @@ def createData():
                     currMax = max(float(newVal),float(outputDict[valStr]['max']))
                     currMin = min(float(newVal),float(outputDict[valStr]['min']))
                         
-                    outputDict[valStr] = {'sum':str(float(outputDict[valStr]['sum'])+float(temp['sum'])),'count':outputDict[valStr]['count']+1,'min':currMin,'max':currMax}
+                    outputDict[str(valStr)] = {'sum':str(float(outputDict[valStr]['sum'])+float(temp['sum'])),'count':outputDict[str(valStr)]['count']+1,'min':currMin,'max':currMax}
 
                     #if there are more than *beginMinMaxCalcs* values in the averaging period, add min and max to output file
-                    if float(outputDict[valStr]['count']) > beginMinMaxCalcs:
+                    if float(outputDict[str(valStr)]['count']) > beginMinMaxCalcs:
                         minmax = True
                 except ValueError:
                     pass
             else:
-                outputDict[valStr] = temp
+                outputDict[str(valStr)] = temp
 
             valStr = ''
 
@@ -234,6 +238,15 @@ def writeFile():
     global minmax
     global dirPath
     global hrfTitle
+    global fileName
+
+    #create the sub directory that will contain the reduced data and the copied metadata files
+    if not os.path.exists(os.path.dirname(fileName)):
+        try:
+            os.makedirs(os.path.dirname(fileName))
+        except OSError as exc:
+            if exc.errno != errno.EEXIST:
+                raise
     
     #erase whatever is currently in output csv file
     open(outputFile,'w').close()
@@ -244,9 +257,18 @@ def writeFile():
     #update the output csv file's first line with the field names (removing 'value_hrf' (or 'value_hrf_moving_average') and 'value_raw') in the following format:
     #timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average or timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average,value_hrf_min,value_hrf_max
     with open (outputFile,'w') as f:
-        #delete the value_raw column if it exists
+
+        #remove un used field names
         try:
             fieldNames.remove('value_raw')
+        except:
+            pass
+        try:
+            fieldNames.remove('value_hrf_count')
+        except:
+            pass
+        try:
+            fieldNames.remove('value_hrf_sum')
         except:
             pass
         
@@ -303,6 +325,7 @@ The columns remain the same but 'value_raw' and 'value_hrf' do not exist in the 
 The provenance.csv file contains the provenance for the original data set. Provenance for reduced data:
 New Provenance - This data was reduced and combined with the original digest metadata on """ + str(datetime.datetime.utcnow()) + ". It has been modifed by the dataReduction.py data reduction tool.\n\n"
 
+    
     newReadme = subDir + "/reducedREADME.md"
     oldReadme = subDir+"/README.md"
     with open (newReadme,'w') as n, open (oldReadme, "r") as o:
@@ -311,7 +334,7 @@ New Provenance - This data was reduced and combined with the original digest met
 
     try:
         subprocess.run(["rm " + oldReadme.replace(" ","\ ")], shell=True, check=True)
-        subprocess.run(["mv " + newReadme.replace(" ","\ ") + " README.md" ], shell=True, check=True)
+        subprocess.run(["mv " + newReadme.replace(" ","\ ") + " " + subDir + "/README.md" ], shell=True, check=True)
     except subprocess.CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
 
@@ -330,6 +353,7 @@ if __name__ == "__main__":
     global dirPath
     global subDir
     global hrfTitle
+    global fileName
 
     inputFile = ''
     outputFile = ''
@@ -343,6 +367,7 @@ if __name__ == "__main__":
     dirPath = ''
     subDir = ''
     hrfTitle = ''
+    fileName = ''
     
     #begin generating data
     print("Generating...")
@@ -350,7 +375,7 @@ if __name__ == "__main__":
     #begin timer for benchmarking
     timerStart = time.time()
 
-    #get user input, reduce and store data, write new .csv file
+    #get user input, reduce and store data, write new .csv file, output directory
     setup()
     createData()
     writeFile()

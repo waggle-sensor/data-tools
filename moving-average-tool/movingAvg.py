@@ -78,11 +78,13 @@ def setup():
     else:
         period = numInterval
 
+    # comment this out if the averaging window needs to be greater than 2 days
     if period > 172800:
-        print("Error: Time interval must be less than 2 days.")
+        print("Error: Averaging window must be less than 2 days.")
         exit(1)
 
     #create the sub directory that will contain the moving averaged data and the copied metadata files
+    #create path names
     dirList = dirPath.split("/")
     parentDir = dirList[len(dirList)-1]
     subDir = dirPath + "/" + parentDir + "_moving_average_data_" + str(args.period)
@@ -140,7 +142,7 @@ def createData():
 
                 #sensor values can come from the original data set or the data reduction tool; otherwise, the tool cannot function
                 for i in range(0,len(fieldNames)):
-                    if 'value_hrf' not in fieldNames[i] and 'value_raw' not in fieldNames[i] and 'value_hrf_average' not in fieldNames[i]:
+                    if 'value_hrf' not in fieldNames[i] and 'value_raw' not in fieldNames[i] and 'value_hrf_average' not in fieldNames[i] and 'value_hrf_sum' not in fieldNames[i] and 'value_hrf_count' not in fieldNames[i]:
                         header = header + fieldNames[i] + ','
                         
                     if (fieldNames[i] == "value_hrf"):
@@ -159,18 +161,34 @@ def createData():
             #save the timestamp and value_hrf (or value_hrf_average), then delete these and value_raw from the current row
             #(value_raw will most likely not be used by the end user and does not make sense to keep track of)
             timestamp = row['timestamp']
-            value_hrf = row[hrfTitle]
+            
+            if (',' in row[hrfTitle]):
+                value_hrf = '"'+ row[hrfTitle] +'"' #corrects error if commas are included in a sensor value
+            else:
+                value_hrf = row[hrfTitle]
+                
             del row['timestamp'], row[hrfTitle]
 
-            #delete the value_raw column if it exists
+            #delete the value_raw, value_hrf_sum, and value_hrf_count columns if they exist
             try:
                 del row['value_raw']
+            except:
+                pass
+            try:
+                del row['value_hrf_sum']
+            except:
+                pass
+            try:
+                del row['value_hrf_count']
             except:
                 pass
 
             #iterate through the items in the row dictionary to build the key for the sensorDict
             for k,v in row.items():
-                sensorKey = sensorKey + str(v) + ','
+                if ("," in str(v)):
+                    sensorKey = '"'+str(v)+'"'
+                else:
+                    sensorKey = sensorKey + str(v) + ','
 
             #Take off last comma
             sensorKey = sensorKey[:-1]
@@ -201,8 +219,6 @@ def createData():
 
                     #re-append the last value since the while loop goes one removal too far
                     sensorDict[sensorKey].appendleft(nextInQueue)
-                    #if sensorKey == '001e0610ba46,lightsense,apds_9006_020,intensity':
-                        #print(sensorDict[sensorKey])
 
                 #calculate the moving average for the current period by taking a simple moving average of
                 #all the values in the deque of the current node/sensor (specified by the sensorKey)
@@ -273,7 +289,7 @@ New Provenance - This moving averaged data was created and combined with the ori
 
     try:
         subprocess.run(["rm " + oldReadme.replace(" ","\ ")], shell=True, check=True)
-        subprocess.run(["mv " + newReadme.replace(" ","\ ") + " README.md" ], shell=True, check=True)
+        subprocess.run(["mv " + newReadme.replace(" ","\ ") + " " + subDir + "/README.md" ], shell=True, check=True)
     except subprocess.CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
 
@@ -294,7 +310,7 @@ if __name__ == "__main__":
     print("Generating...")
     timerStart = time.time()
 
-    #get user input, calculate and store data, write new .csv file
+    #get user input, calculate and store data, write new .csv file, output directory
     setup()
     createData()
     copyDigestFiles()
