@@ -10,7 +10,8 @@ This tool will reduce the amount of data from a complete node data set by averag
 The command line tool `dataReduction.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv(uncompress the data.csv.gz file before using the tool), nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day).
 
 ### Output:
-This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a new reduced data.csv file (timestamps are written out as halfway between the interval specified by the user). The final output of the dataReduction.py tool will be a sub directory placed in the passed in directory that contains the reduced data set (reduced data.csv) and extra metadata files (nodes.csv, provenance.csv, and sensors.csv) along with a modified README (README.md).
+This tool will read the data.csv file located in the provided directory path, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a sub directory inside the source directory with reduced data set (reduced) data.csv and extra metadata files 
+(nodes.csv, provenance.csv, and sensors.csv) along with a modified README (README.md). In the reduction process, the timestamps are written out as halfway between the interval specified by the user
 
 ## How to Use dataReduction.py
 
@@ -35,7 +36,11 @@ Errors will be specified for user error such as: not all of the parameters being
 1. First follow the instructions listed at this link: ```https://github.com/waggle-sensor/waggle/tree/master/data``` to download and unpackage a complete node dataset. Place the final, entirely unpackaged directory in the desired location on your computer (make sure to complete the step that unpackages the data.csv.gz archive).
 2. Clone or download the data-tools directory at this link: ```https://github.com/waggle-sensor/data-tools``` and move it to the desired location on your computer.
 3. From the command line, navigate to the data-reduction-tool directory that is inside the data-tools directory downloaded from step 2.
-4. Run the dataReduction.py tool from the command line: ```python3 dataReduction.py -i /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```. Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. Adding ```-v #``` with ```#``` replaced by an integer will print the number of lines that have been parsed through (though this causes the progam to take more time to reduce data). Remember, the directory path specified must contain the following five files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. 
+4. Run the dataReduction.py tool from the command line:
+
+```python3 dataReduction.py -i /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```
+
+Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. Adding ```-v #``` with ```#``` replaced by an integer will print the number of lines that have been parsed through (though this causes the progam to take more time to reduce data). Remember, the directory path specified must contain the following five files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. 
 
 ## Examples
 
