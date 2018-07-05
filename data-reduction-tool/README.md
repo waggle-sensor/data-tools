@@ -1,36 +1,7 @@
 # Data Reduction Command Line Tool
 
 ## Requirements
-This tool requires that the user has Python3 installed and was tested on a desktop computer with an Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz, 8 GB of RAM, Ubuntu 18.04 LTS, and Linux 4.15.0-23-generic. It has also been tested on an Apple Macbook and worked correctly.
-
-## Description
-This tool will reduce the amount of data from a complete node data set by averaging sensor values over a specified time period.
-
-### Input: 
-The command line tool `dataReduction.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv(uncompress the data.csv.gz file before using the tool), nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day).
-
-### Output:
-This tool will read the data.csv file located in the provided directory path, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a sub directory inside the source directory with reduced data set (reduced) data.csv and extra metadata files 
-(nodes.csv, provenance.csv, and sensors.csv) along with a modified README (README.md). In the reduction process, the timestamps are written out as halfway between the interval specified by the user
-
-## How to Use dataReduction.py
-
-When typing on the terminal, the tool takes in two required parameters (input directory path and time period) with identifiers and one optional parameter (verbose) with an identifier: input directory path (```-i, --input```), time period (```-t, --time```) and verbose option for number of lines parsed (```-v, --verbose```).
-
-**Input:** The path to the unpackaged complete node data set (must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv).
-
-**Period:** The period parameter should be in the format ```-t #x ``` where ```#``` is an integer and ```x``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively.
-
-**Verbose:** Optional parameter. Specifying the verbose option with an integer will print out the number of lines parsed for every increment of the integer passed in (e.g. if user enters 1000, every 1000 lines the program will print the number of lines - 1000, 2000, 3000...)
-
-**Note:** User is not allowed to enter anything less than 24 seconds because it is how often data is received and an average could not be calculated for anything lower.
-**Note:** The reduced data.csv output file will have the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average``` all the time. If there are more than a certain number of values (1000 right now) in any of the averaging periods, the tool will output the reduced data.csv file with the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf__sum,value_hrf_count,value_hrf_average,value_hrf__min,value_hrf_max```. It includes a minimum and maximum value per averaging period that is useful when graphing or analyzing the output data.
-
-Terminal command format should be like these examples: ```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m``` or ```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m -v 1000```
-
-Typing ```-h``` or ```--help``` as a parameter when using this tool will pull up the help: ```python3 dataReduction.py -h```.
-
-Errors will be specified for user error such as: not all of the parameters being filled in when using the tool, not specifying an input file, specifying an input or output file that is not .csv format, etc.
+This tool requires Python3.
 
 ## Step-by-Step Instructions for Reducing Data
 1. Download and unpackage a complete node dataset. Make sure to complete the step that unpackages the data.csv.gz archive.
@@ -208,4 +179,37 @@ Done. Took 7.03s to complete.
 2018/06/10 12:00:00,001e0610ba46,metsense,metsense,id,0111d5141800,1,0,0111d5141800,0111d5141800
 2018/06/10 12:00:00,001e0610ba46,metsense,bmp180,temperature,60030.89999999998,3438,17.46,13.9,21.6
 ```
+
+## Detailed Description
+This tool will reduce the amount of data from a complete node data set by averaging sensor values over a specified time period.
+
+### Input: 
+The command line tool `dataReduction.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv(uncompress the data.csv.gz file before using the tool), nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day).
+
+### Output:
+This tool will read the data.csv file located in the provided directory path, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a sub directory inside the source directory with reduced data set (reduced) data.csv and extra metadata files 
+(nodes.csv, provenance.csv, and sensors.csv) along with a modified README (README.md). In the reduction process, the timestamps are written out as halfway between the interval specified by the user
+
+## How to Use dataReduction.py
+
+When typing on the terminal, the tool takes in two required parameters (input directory path and time period) with identifiers and one optional parameter (verbose) with an identifier: input directory path (```-i, --input```), time period (```-t, --time```) and verbose option for number of lines parsed (```-v, --verbose```).
+
+**Input:** The path to the unpackaged complete node data set (must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv).
+
+**Period:** The period parameter should be in the format ```-t #x ``` where ```#``` is an integer and ```x``` is one of the following characters: ```'s','m','h', or 'd'```. The characters represent seconds, minutes, hours, and days, respectively.
+
+**Verbose:** Optional parameter. Specifying the verbose option with an integer will print out the number of lines parsed for every increment of the integer passed in (e.g. if user enters 1000, every 1000 lines the program will print the number of lines - 1000, 2000, 3000...)
+
+**Note:** User is not allowed to enter anything less than 24 seconds because it is how often data is received and an average could not be calculated for anything lower.
+**Note:** The reduced data.csv output file will have the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_average``` all the time. If there are more than a certain number of values (1000 right now) in any of the averaging periods, the tool will output the reduced data.csv file with the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf__sum,value_hrf_count,value_hrf_average,value_hrf__min,value_hrf_max```. It includes a minimum and maximum value per averaging period that is useful when graphing or analyzing the output data.
+
+Terminal command format should be like these examples: ```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m``` or ```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m -v 1000```
+
+Typing ```-h``` or ```--help``` as a parameter when using this tool will pull up the help: ```python3 dataReduction.py -h```.
+
+Errors will be specified for user error such as: not all of the parameters being filled in when using the tool, not specifying an input file, specifying an input or output file that is not .csv format, etc.
+
+
+### Compatibility
+This tool was tested on a desktop computer with an Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz, 8 GB of RAM, Ubuntu 18.04 LTS, and Linux 4.15.0-23-generic. It has also been tested on an Apple Macbook and worked correctly.
 
