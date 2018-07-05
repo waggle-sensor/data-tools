@@ -6,7 +6,6 @@ This tool requires Python3.
 ## Step-by-Step Instructions for Reducing Data
 1. Download and unpackage a complete node dataset. Make sure to complete the step that unpackages the data.csv.gz archive.
 2. Run the dataReduction.py tool from the command line:
-
 ```python3 dataReduction.py -i /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```
 
 Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. The ```-v #``` option with ```#``` replaced by an integer can be used to print a line count after every ```#``` number of lines have been parsed (this causes the progam to take more time to reduce data). 
