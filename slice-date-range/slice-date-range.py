@@ -75,6 +75,8 @@ if __name__ == '__main__':
 
     print('Writing data file to {}.'.format(build_data_file))
 
+    offsets = []
+
     with open(build_data_file, 'wb') as outfile:
         print('Appending header.')
         outfile.write(compressed_header)
@@ -82,6 +84,14 @@ if __name__ == '__main__':
         with open(source_data_file, 'rb') as infile:
             for chunk in chunks_in_range:
                 print('Appending chunk for {}.'.format(chunk['date']))
+
+                offset = outfile.tell()
                 infile.seek(chunk['offset'])
                 data = infile.read(chunk['size'])
-                outfile.write(data)
+                size = outfile.write(data)
+                offsets.append([chunk['date'], offset, size])
+
+    with open(os.path.join(build_dir, 'offsets.csv'), 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(['date', 'offset', 'size'])
+        writer.writerows(offsets)
