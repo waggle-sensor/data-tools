@@ -235,6 +235,8 @@ def createData():
 
                 try:
                     avg = summation/float(count)
+                    summation = round(summation,3)
+                    avg = round(avg,3)
                 except TypeError:
                     pass
 

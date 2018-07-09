@@ -240,6 +240,12 @@ def writeFile():
     global hrfTitle
     global fileName
 
+    summation = 0.0
+    avg = 0.0
+    minimum = 0.0
+    maximum = 0.0
+    count = 0
+
     #create the sub directory that will contain the reduced data and the copied metadata files
     if not os.path.exists(os.path.dirname(fileName)):
         try:
@@ -289,17 +295,27 @@ def writeFile():
         #for each item in the dictionary - calculate the average of each time period (row) using the sum and count
         #include the average in the value dictionary of outputDict
         for key,val in outputDict.items():
+            avg = 0
+            summation = val['sum']
+            minimum = val['min']
+            maximum = val['max']
+            count = val['count']
+            
             try:
-                val.update({'average':round(float(val['sum'])/val['count'],2)})
+                avg = round(float(val['sum'])/val['count'],3)
+                summation = round(float(val['sum']),3)
+                minimum = round(float(val['min']),3)
+                maximum = round(float(val['max']),3)
+                val.update({'average':avg})
             except ValueError:
                 val.update({'average':0})
 
             #write the whole row with the outputDict key (timestamp,node_id,subsystem,sensor,parameter) and the outputDict values (sum,count,average,max,min)
             #also include the average, max, and min if there are more than *beginMinMaxCalcs* values in the averaging period
             if minmax == True:    
-                f.write(str(key)+','+str(val['sum'])+','+str(val['count'])+','+str(val['average'])+','+str(val['min'])+','+str(val['max'])+'\n')
+                f.write(str(key)+','+str(summation)+','+str(count)+','+str(avg)+','+str(minimum)+','+str(maximum)+'\n')
             else:
-                f.write(str(key)+','+str(val['sum'])+','+str(val['count'])+','+str(val['average'])+'\n')
+                f.write(str(key)+','+str(summation)+','+str(count)+','+str(avg)+'\n')
 
 def copyDigestFiles():
     
