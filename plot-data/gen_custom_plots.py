@@ -11,7 +11,8 @@ import re
 import os
 
 parent = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-sys.path.append(parent)
+utils = os.path.join(parent,'utils')
+sys.path.append(utils)
 
 from plotting_utilities import *
 from collections import OrderedDict
@@ -76,8 +77,8 @@ if __name__ == '__main__':
 
 	dicts = getSensors(data_directory)
 	parameter_to_sensor_subsystem_dict = dicts[0]
-	for key in parameter_to_sensor_subsystem_dict:
-		print(key,':',parameter_to_sensor_subsystem_dict[key])
+	# for key in parameter_to_sensor_subsystem_dict:
+	# 	print(key,':',parameter_to_sensor_subsystem_dict[key])
 	# print(parameter_to_sensor_subsystem_dict)
 	ontology_dict = dicts[1]
 	triplet_to_hrf_unit_dict = dicts[4]
@@ -701,7 +702,8 @@ unset multiplot
 	with open('graph.plt','w') as f:
 		f.write(output)
 
-	print("Plotting data to ./plots/{output}".format(output=args.output))
+	input_string = args.input.strip('/')
+	print("Plotting data to {input}/plots/{output}".format(input=input_string,output=args.output))
 
 	subprocess.run(['gnuplot', 'graph.plt'])
 	subprocess.run(['rm', 'graph.plt'])
