@@ -12,7 +12,8 @@ The project directory used as input must have the following files:
 * `data.csv.gz`
 * `nodes.csv`
 * `sensors.csv`
-* `offsets.csv`
+* `offsets.csv`  
+
 **Note:** this tool specifically requires `data.csv.gz`, not `data.csv`
 
 ## How to Use
@@ -21,7 +22,7 @@ To run the scripts, use the command line to navigate to the `digest-plot` direct
 
 To retrieve data run `./stage_project.sh project_id`  
 To generate the plots run `./create_project_graphs.sh project_directory_path`  
-To generate the tables run `gen_tables.py`
+To generate the tables run `python3 gen_tables.py`
 
 
 ### Example
@@ -87,16 +88,6 @@ Plotting 001e06113a07 month /system/other/sampling_period
 
 ```
 
-
-
-
-* `project_id` is the id of the project you want to plot data from substituting underscores for spaces
-* eg. `./stage_project AoT_Chicago`, `./stage_project AoT_Portland`, `./stage_project NUCWR-MUGS`  
-
-* `project_directory` is the directory created by `stage_project.sh`
-* eg. `./create_project_graphs.sh AoT_Chicago.complete.2018-07-09`, `./create_project_graphs.sh AoT_Portland.complete.2018-06-24`
-* The directory will always be the project idea used previously, followed by complete, followed by the date the dataset is from.
-
 ## Documentation
 
 ### Data Retrieval
@@ -112,8 +103,6 @@ Plotting 001e06113a07 month /system/other/sampling_period
 `project_directory_path` is the path to the directory created by `stage_project.sh`, inside the `scratch` directory, which contains `data.csv.gz`, `nodes.csv`, `sensors.csv`, `offsets.csv`, `provenance.csv`, and `README.md`.  
 
 Given a valid project directory, the `slice-date-range` tool is used to cut `data.csv.gz` into daily slices and uncompress the resulting files. Then `extract_nodes.py` is used to get the data for each node from each day. Then `gen_digest_plots.py` extracts the rest of the data for each ontology into a plottable dataset and generates plots for all of the data that exists for each node.
-
-
 
 The data is obtained from a complete data set at http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php. The data is then split into daily chunks using the `slice-date-range` tool which can also be found in this repository. Then data for each node is extracted from the daily chunks, and finally the data for each ontology is extracted. The data is then combined into 1 day, 7 day and 30 day datasets suitable for plotting.
 
