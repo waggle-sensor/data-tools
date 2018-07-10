@@ -189,13 +189,11 @@ def getStartDate(path):
 	date = first2lines[1].split(',')
 	return date[0]
 
-
 def getEndDate(path):
 	last_line = subprocess.check_output(['tail','-1',path])
 	last_line = last_line.decode().split(',')
 	date = last_line[0]
 	return date
-
 
 if __name__ == '__main__':
 	cwd = os.getcwd()

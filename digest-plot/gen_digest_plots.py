@@ -15,16 +15,8 @@ import os
 parent = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 utils = os.path.join(parent,'utils')
 sys.path.append(utils)
-sys.path.insert(0,utils)
 
 from plotting_utilities import *
-
-
-# def downloadData(cwd,node,date):
-# 	url = 'www.mcs.anl.gov/research/projects/waggle/downloads/datasets/3/{node}/{date}.csv.gz'.format(node=node,date=date)
-# 	path = '{cwd}/data/{node}/{date}'.format(cwd=cwd,node=node,date=date)
-# 	subprocess.run(['wget',url,'-P',path],stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
-# 	subprocess.run(['gzip','-d','{path}/{date}.csv.gz'.format(path=path,date=date)],stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
 
 def extractData(input_path,output_path,parameter,sensor,subsystem):
 	outliers = 0
@@ -36,7 +28,7 @@ def extractData(input_path,output_path,parameter,sensor,subsystem):
 			os.unlink(output_path)
 		return
 
-	cut(',','1,7',output_path,output_path)
+	cut(',','1,{}'.format(data_column),output_path,output_path)
 
 	outliers = trimOutliers(output_path)
 	# delFirstLine(output_path)
@@ -51,6 +43,7 @@ def getDates(days=1):
 
 if __name__ == '__main__':
 	project_dir = sys.argv[1]
+	data_column = sys.argv[2]
 	cwd = os.getcwd()
 
 	dicts = getNodes(project_dir)
@@ -66,10 +59,6 @@ if __name__ == '__main__':
 	date_list = getDates(30)
 
 	deleted_old_data = False
-
-
-
-
 
 	# extract ontology/parameter data from daily data sets
 	no_data_nodes = []
@@ -92,6 +81,7 @@ if __name__ == '__main__':
 		for file in os.listdir(path):
 			if file == 'final':
 				continue
+			print('Extracting {}/{}...'.format(node,file))
 
 			input_path = os.path.join(path,file,'{}.csv'.format(file))
 
@@ -114,16 +104,15 @@ if __name__ == '__main__':
 
 				# extract just the parameter data from each day
 				output_path = '{project_dir}/data/{node}/{file}/{parameter}.csv'.format(project_dir=project_dir,node=node,parameter=parameter,file=file)
-				# if the data has already been extracted, don't do it again
-				if os.path.exists(output_path) or (deleted_old_data and file != datetime.datetime.utcnow().strftime("%Y-%m-%d")):
-					continue
-				if not os.path.isfile(output_path):
-					with open(output_path,'w+') as f:
-						f.close()
-				print('Extracting {}/{}/{}...'.format(node,file,parameter))
+				# # if the data has already been extracted, don't do it again
+				# if os.path.exists(output_path) or (deleted_old_data and file != datetime.datetime.utcnow().strftime("%Y-%m-%d")):
+				# 	continue
+				# if not os.path.isfile(output_path):
+				# 	with open(output_path,'w+') as f:
+				# 		f.close()
+				
 				status = grep(parameter,input_path,output_path)
 				if status > 0:
-					# print('{} not found'.format(parameter))
 					continue
 
 				input_path = output_path

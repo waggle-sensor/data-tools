@@ -1,6 +1,14 @@
 # Digest Plot Generation
 
-This tool generates plots of data over the last day, week and month, for every node. These plots are displayed in a table sorted by the ontology of the data for each node. The tables contain links to each plot that exists. Not every node has data for every ontology, so those rows are unlinked. The plots are meant to be updated daily.  
+## Overview
+
+This tool generates plots of data over the last day, week and month, for every node. These plots are displayed in a table sorted by the ontology of the data for each node. The tables contain links to each plot that exists. Not every node has data for every ontology, so those rows are unlinked. The plots can be updated daily.
+
+## Requirements  
+
+This tool depends on **python3**, **numpy** and **pandas** packages for python3, as well as **gnuplot**. Please make sure they are installed in the system where they are intended to be used.  
+The bash shell scripts this tool uses require a Linux or Mac OS X environment to run.  
+Plotting also requires that the 
 
 This tool relies on `plotting utilities.py`, `extract.sh` and `cut.sh` in the parent directory. It also requires the pandas and numpy packages for python.
 

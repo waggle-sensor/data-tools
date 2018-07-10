@@ -33,9 +33,12 @@ for ((i=1;i<=30;i++)); do
 	python3 extract_nodes.py "$project_dir" "$date_dir" "$date"
 done
 
+date=$(date -u -d "1 days ago" +%Y-%m-%d)
+data_column=$(head -n1 "${project_dir}".from-"${date}"-to-"${date}"/data.csv | tr "," "\n" | grep -nx "value_hrf\|value_hrf_average\|value_hrf_moving_average" |  cut -d":" -f1)
+
 rm -rf "$project_dir".from*
 
-python3 gen_digest_plots.py "$project_dir"
+python3 gen_digest_plots.py "$project_dir" "$data_column"
 
 rm -rf "$project_dir"/data
 rm graph.plt

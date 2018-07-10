@@ -8,6 +8,12 @@ This tool generates plots based on command line input. Given a directory with da
 
 This tool depends on **python3**, **numpy** and **pandas** packages for python3, as well as **gnuplot**. Please make sure they are installed in the system where they are intended to be used.  
 The bash shell scripts this tool uses require a Linux or Mac OS X environment to run.  
+The project directory used as input must have the following files:
+* `data.csv`
+* `nodes.csv`
+* `sensors.csv`
+* `provenance.csv`
+* `README.md`
 Plotting also requires that the file `data.csv` has the following columns:
 * `timestamp`
 * `node_id`
@@ -44,7 +50,7 @@ https://github.com/waggle-sensor/waggle/tree/master/data contains a list of data
 
 ### Plot Generation
 
-`gen_custom_plots.py` extracts the specified data from `data.csv` in the data directory and combines the data into plottable datasets. Then the data is plotted as specified by command line arguments. The data extracted each time the tool is run is stored in daily slices in a folder called `tmp` in the data directory so that it does not need to be extracted again, because extracting the data can be very time consuming with large datasets. If data is already extracted for a given plot, the files will just be combined into a final plottable dataset. If only some of the specified data is already extracted, the rest of the data will be extracted, skipping over the data that already exists.
+`gen_custom_plots.py` extracts the specified data from `data.csv` in the data directory and combines the data into plottable datasets. Then the data is plotted as specified by command line arguments. The data extracted each time the tool is run is stored in daily slices in a folder called `scratch` in the data directory so that it does not need to be extracted again, because extracting the data can be very time consuming with large datasets. If data is already extracted for a given plot, the files will just be combined into a final plottable dataset. If only some of the specified data is already extracted, the rest of the data will be extracted, skipping over the data that already exists.
 
 #### Command Line Arguments
 

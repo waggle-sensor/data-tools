@@ -237,7 +237,7 @@ if __name__ == '__main__':
 			if string in header:
 				data_column = header.index(string) + 1
 
-	temp_data_path = os.path.join(data_directory,'tmp')
+	temp_data_path = os.path.join(data_directory,'scratch')
 	if not os.path.exists(temp_data_path):
 		os.makedirs(temp_data_path)
 
