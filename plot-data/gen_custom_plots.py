@@ -46,7 +46,6 @@ if __name__ == '__main__':
 	parser._action_groups.append(optional)
 
 	args = parser.parse_args()
-	# print(args)
 
 	cwd = os.getcwd()
 
@@ -77,9 +76,7 @@ if __name__ == '__main__':
 
 	dicts = getSensors(data_directory)
 	parameter_to_sensor_subsystem_dict = dicts[0]
-	# for key in parameter_to_sensor_subsystem_dict:
-	# 	print(key,':',parameter_to_sensor_subsystem_dict[key])
-	# print(parameter_to_sensor_subsystem_dict)
+
 	ontology_dict = dicts[1]
 	triplet_to_hrf_unit_dict = dicts[4]
 
@@ -93,12 +90,9 @@ if __name__ == '__main__':
 		print('[ERROR] illegal character in output file name')
 		exit(1)
 
-	
 	datacsv_path = os.path.join(data_directory,'data.csv')
 	earliest_date = getStartDate(datacsv_path)
 	latest_date = getEndDate(datacsv_path)
-
-	
 
 	exit_flag = False
 	if args.plot is None and args.ontology is None:
@@ -137,7 +131,7 @@ if __name__ == '__main__':
 
 	start_date = '{} 00:00:00'.format(args.timeframe[0].replace('-','/'))
 	end_date = '{} 23:59:59'.format(args.timeframe[1].replace('-','/'))
-	# print(start_date, earliest_date, end_date, latest_date)
+
 	if (start_date < earliest_date):
 		print('[ERROR] Start date is earlier than the earliest date in data.csv')
 	if (end_date > latest_date):
@@ -231,42 +225,9 @@ if __name__ == '__main__':
 		print('[ERROR] Cannot overlay data with more than 2 different units on one plot')
 		exit(1)
 
-	# determine which file is most efficient to pull data from
-	input_path = ''
-
-	# This was used with fileMaker.sh
-	# month_path = os.path.join(data_directory,'month.csv')
-	# week_path = os.path.join(data_directory,'week.csv')
-	# day_path = os.path.join(data_directory,'day.csv')
-
-	# month_start_date = getStartDate(month_path)
-	# month_end_date = getEndDate(month_path)
-	# week_start_date = getStartDate(week_path)
-	# week_end_date = getEndDate(week_path)
-	# day_start_date = getStartDate(day_path)
-	# day_end_date = getEndDate(day_path)
-
-	# daily_data_path = os.path.join(data_path,'daily_data')
-	# day_directory_path = os.path.join(daily_data_path,day_start_date.split(' ')[0].replace('/','-'))
-	# copy_day_path = os.path.join(day_directory_path,'{}.csv'.format(day_start_date.split(' ')[0].replace('/','-')))
-	# if not os.path.exists(daily_data_path):
-	# 	os.makedirs(daily_data_path)
-	# if not os.path.exists(day_directory_path):
-	# 	os.makedirs(day_directory_path)
-	# if not os.path.exists(copy_day_path):
-	# 	shutil.copyfile(day_path,copy_day_path)
-
-	# if start_date >= day_start_date:
-	# 	input_path = day_path
-	# elif start_date >= week_start_date:
-	# 	input_path = week_path
-	# elif start_date >= month_start_date:
-	# 	input_path = month_path
-	# else:
-	# 	input_path = datacsv_path
-
 	input_path = datacsv_path
 
+	# determine which column the data is in
 	data_column = 0
 	header_list = ['value_hrf','value_hrf_average','value_hrf_moving_average']
 	with open(input_path,'r') as f:
@@ -342,7 +303,7 @@ if __name__ == '__main__':
 					input_path = os.path.join(node_directory,'{}.csv'.format(node))
 					extract_path = os.path.join(node_directory,'{}-{}-{}.csv'.format(triplet[0],triplet[1],triplet[2]))
 					if not os.path.exists(extract_path):
-						print('Extracting {} data from node {}...'.format(triplet[0],node))
+						# print('Extracting {} data from node {}...'.format(triplet[0],node))
 						grep(and_pattern_list[i],input_path,extract_path,useAnd=True)
 						cut(',','1,{}'.format(data_column),extract_path,extract_path)
 					if os.stat(extract_path).st_size == 0:
@@ -414,7 +375,7 @@ if __name__ == '__main__':
 			if list(triplet) in ontology_dict[ontology]:
 				triplet_to_ontology_dict[triplet] = ontology
 
-	# find the min and max value for each ylabel
+	# find the min and max value for each ylabel over multiple files
 	ylabel_to_min_max_dict = {}
 	ylabel_to_values_dict = {}
 	for file in os.listdir(final_data_directory):
@@ -452,7 +413,7 @@ if __name__ == '__main__':
 				title = '{}\\n{}'.format(title,node_info)
 
 		title_list.append(title)
-	else: # layout is set to something other than 1,1 and over lay is not set
+	else: # layout is set to something other than 1,1 and over lay is not set (not used)
 		if args.plot:
 			for node in node_to_triplet_dict:
 				for triplet in node_to_triplet_dict[node]:
@@ -470,9 +431,7 @@ if __name__ == '__main__':
 		logscale = 'set logscale y'
 
 	# set the y label and construct plot string
-	
-
-	if len(ylabel_list) == 1 and (args.overlay or args.layout == [1,1]):
+	if len(ylabel_list) == 1 and (args.overlay or args.layout == [1,1]): # simplest plot
 		ylabel = 'set ylabel noenhanced "{}"'.format(ylabel_list[0])
 		plot = ''
 		if args.plot:
@@ -505,7 +464,7 @@ if __name__ == '__main__':
 								plot = "{}, {}".format(plot,'"{path}" using 1:2 with lines title "{node} | {ontology} | {param} by sensor {sens}" noenhanced'.format(path=dataset_path,node=node,ontology=triplet_to_ontology_dict[triplet],param=triplet[0],sens=triplet[1]))
 		tics = 'tics'
 
-	elif len(ylabel_list) == 2 and (args.overlay or args.layout == [1,1]):
+	elif len(ylabel_list) == 2 and (args.overlay or args.layout == [1,1]): # plot overlaid with 2 different y labels
 		ylabel = 'set ylabel noenhanced "{}"\nset y2label "{}"'.format(ylabel_list[0],ylabel_list[1])
 		plot = ''
 		if args.plot:
@@ -623,7 +582,7 @@ set multiplot layout {layout} title "{{/={provenance_font_size} Created: {today}
 {multiplot}
 unset multiplot
 '''
-
+	# set up the command for provenance
 	i_string = '-i {} '.format(args.input)
 	o_string = '-o {} '.format(args.output) if args.output != 'output.png' else ''
 	t_string = '-t {} {} '.format(args.timeframe[0],args.timeframe[1])
