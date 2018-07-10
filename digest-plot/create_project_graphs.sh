@@ -1,5 +1,5 @@
 usage() {
-	echo "usage: ${0} project_dir"
+	echo "usage: ${0} project_dir_path"
 }
 
 if [ "$1" = "" ]; then
