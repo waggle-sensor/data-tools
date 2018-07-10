@@ -67,12 +67,19 @@ The arguments needed to generate a plot are `-i` (`--input`), `-o` (`--output`),
 * `-o` specifies the output file name
 	* If this argument is not provided, a default file name will be used
 	* The default file name is 'output.png'
-* `-p` specifies the node, parameter, sensor, and subsystem data to plot
-	* A list of nodes exists in nodes.csv
-	* A list of parameters, sensors and subsystems exists in sensors.csv
 * `-t` specifies a start date and an end date, defining the time frame over which to plot the data
 	* Date format: YYYY-MM-DD
 	* Data is plotted from 00:00:00 on the start date to 23:59:59 on the end date
+* `-p` specifies the node, parameter, sensor, and subsystem data to plot
+	* A list of nodes exists in nodes.csv
+	* A list of parameters, sensors and subsystems exists in sensors.csv
+* `-n` specifies a node and an ontology to plot
+	* Using this option, data from all sensors within the ontology will be plotted on one graph
+	* When using a custom layout, 
+	* Multiple ontologies van be specified by using the `-n` multiple times
+	* In order for a plot to be generated, the node and ontology must be valid:
+		* The node must exist in nodes.csv
+		* The ontology must exist in sensors.csv
 
 ##### Plot Settings Arguments
 
