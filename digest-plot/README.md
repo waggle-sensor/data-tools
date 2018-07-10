@@ -12,7 +12,8 @@ The project directory used as input must have the following files:
 * `data.csv.gz`
 * `nodes.csv`
 * `sensors.csv`
-* `offsets.csv`
+* `offsets.csv`  
+
 **Note:** this tool specifically requires `data.csv.gz`, not `data.csv`
 
 ## How to Use
