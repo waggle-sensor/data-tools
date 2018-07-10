@@ -109,8 +109,15 @@ if __name__ == '__main__':
 		print('[ERROR] Cannot use both -v (--overlay) and -l (--layout) options')
 		exit(1)
 
-	if args.layout != [1,1] and len(args.plot) > args.layout[0]*args.layout[1]:
-		print('[ERROR] {} plots will not fit in a {} x {} layout'.format(len(args.plot),args.layout[0],args.layout[1]))
+	a = 0
+	b = 0
+	if args.plot:
+		a = len(args.plot)
+	if args.ontology:
+		b = len(args.ontology)
+	total = a+b
+	if args.layout != [1,1] and total > args.layout[0]*args.layout[1]:
+		print('[ERROR] {} plots will not fit in a {} by {} layout'.format(total,args.layout[0],args.layout[1]))
 		exit(1)
 
 	validate(args.timeframe[0])
