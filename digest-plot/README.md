@@ -22,7 +22,7 @@ To run the scripts, use the command line to navigate to the `digest-plot` direct
 
 To retrieve data run `./stage_project.sh project_id`  
 To generate the plots run `./create_project_graphs.sh project_directory_path`  
-To generate the tables run `gen_tables.py`
+To generate the tables run `python3 gen_tables.py`
 
 
 ### Example
