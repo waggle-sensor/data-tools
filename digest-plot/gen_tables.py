@@ -202,7 +202,7 @@ table, th, td {{
 
 				if len(ontology_list) == 4:
 					parameter = ontology_list[3]
-				ontology_str = ontology.replace('/','_')
+				ontology_str = ontology.strip('/').replace('/','_')
 				# print(ontology_dict[ontology])
 				parameter = ''
 				sensor = ''
@@ -269,18 +269,28 @@ table, th, td {{
 				week_path = '{path_prefix}/plots/{node_id}/week/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 				month_path = '{path_prefix}/plots/{node_id}/month/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 
+				alt_day = '{path_prefix}/plots/{node_id}-{ontology}-day.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_week = '{path_prefix}/plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_month = '{path_prefix}/plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+
 				if os.path.exists(day_path):
 					day_link = '<a href="{}">Day</a>'.format(os.path.relpath(day_path, 'tables'))
+				elif os.path.exists(alt_day):
+					day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_day, 'tables'))
 				else:
 					day_link = 'Day'
 
 				if os.path.exists(week_path):
 					week_link = '<a href="{}">Week</a>'.format(os.path.relpath(week_path, 'tables'))
+				elif os.path.exists(alt_week):
+					day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_week, 'tables'))
 				else:
 					week_link = 'Week'
 
 				if os.path.exists(day_path):
 					month_link = '<a href="{}">Month</a>'.format(os.path.relpath(month_path, 'tables'))
+				elif os.path.exists(alt_month):
+					day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_month, 'tables'))
 				else:
 					month_link = 'Month'
 
