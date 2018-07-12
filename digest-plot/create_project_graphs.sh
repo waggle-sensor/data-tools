@@ -43,4 +43,6 @@ rm -rf "$project_dir".from*
 python3 gen_digest_plots.py "$project_dir" "$data_column"
 
 rm -rf "$project_dir"/data
-rm graph.plt
+if [ -f graph.plt ]; then
+	rm graph.plt
+fi
