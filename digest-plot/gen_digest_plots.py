@@ -459,7 +459,7 @@ plot {plot}
 					'project':project_dir.replace('_','\\\\_').replace('scratch/',''),
 					'node':node,
 					'ontology':ontology.replace('_','\\\\_'),
-					'ontology_underscores':ontology.replace('/','_'),
+					'ontology_underscores':ontology.strip('/').replace('/','_'),
 					'path':node_plot_path,
 					'sensor':sensor_string,
 					'time_period':time_period,
