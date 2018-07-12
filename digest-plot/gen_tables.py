@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import collections
+import argparse
 import sys
 import os
 import re
@@ -22,16 +23,32 @@ def prettyParams(matchobj):
 	out = str(out_list)
 	return out
 
-
 if __name__ == '__main__':
-	cwd = os.getcwd()
-	path_prefix = cwd
+	parser = argparse.ArgumentParser(description='Generate tables')
+	parser.add_argument('project_dir', help='path to the project directory you want to generate tables for')
+	args = parser.parse_args()
+	
+	if not os.path.exists(args.project_dir):
+		print('[ERROR] {} does not exist'.format(args.project_dir))
 
-	dicts = getNodes(cwd)
+	required_files = ['nodes.csv','sensors.csv']
+	exit_flag = False
+	for file in required_files:
+		file_path = os.path.join(args.project_dir,file)
+		if not os.path.exists(file_path):
+			print('[ERROR] {} does not exist in the input path'.format(file))
+			exit_flag = True
+	if exit_flag:
+		exit(1)
+
+	cwd = os.getcwd()
+	path_prefix = args.project_dir
+
+	dicts = getNodes(args.project_dir)
 	nodes_dict = dicts[0]
 	details_dict = dicts[1]
 
-	dicts = getSensors(cwd)
+	dicts = getSensors(args.project_dir)
 	parameter_to_sensor_subsystem_dict = dicts[0]
 	ontology_dict = dicts[1]
 	subcategory_to_hrf_unit_dict = dicts[2]
@@ -40,7 +57,7 @@ if __name__ == '__main__':
 	# for key in ontology_dict:
 	# 	print('{}:{}'.format(key,ontology_dict[key]))
 
-	tables_path = os.path.join(cwd,'tables')
+	tables_path = os.path.join(args.project_dir,'tables')
 	if not os.path.exists(tables_path):
 		os.makedirs(tables_path)
 
@@ -279,7 +296,7 @@ table, th, td {{
 					'subsystem':subsystem,
 					'node_id':node,
 					'ontology':ontology_str,
-					'path_prefix':cwd,
+					'path_prefix':args.project_dir,
 					'day_link':day_link,
 					'week_link':week_link,
 					'month_link':month_link
@@ -312,4 +329,97 @@ table, th, td {{
 
 			f.write(footer)
 
-		# print('{}/{} Tables Created'.format(i+1,len(nodes_dict)))
+	css_path = os.path.join(tables_path,'style.css')
+	css = '''
+body{
+  padding: 1em;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAQElEQVQIW2P89OvDfwYo+PHjJ4zJwMHBzsAIk0SXAKkCS2KTAEu++vQSbizIKGQAl0SXAJkGlsQmAbcT2Shk+wH0sCzAEOZW1AAAAABJRU5ErkJggg==);
+}
+a{
+  color: #739931;
+}
+.page{
+  max-width: 60em;
+  margin: 0 auto;
+}
+table th,
+table td{
+  text-align: left;
+}
+table.layout{
+  width: 100%;
+  border-collapse: collapse;
+}
+table.display{
+  margin: 1em 0;
+}
+table.display th,
+table.display td{
+  border: 1px solid #B3BFAA;
+  padding: .5em 1em;
+}
+
+table.display th{ background: #D5E0CC; }
+table.display td{ background: #fff; }
+
+table.responsive-table{
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 30em){
+    table.responsive-table{
+      box-shadow: none;  
+    }
+    table.responsive-table thead{
+      display: none; 
+    }
+  table.display th,
+  table.display td{
+    padding: .5em;
+  }
+    
+  table.responsive-table td:nth-child(1):before{
+    content: 'Number';
+  }
+  table.responsive-table td:nth-child(2):before{
+    content: 'Name';
+  }
+  table.responsive-table td:nth-child(1),
+  table.responsive-table td:nth-child(2){
+    padding-left: 25%;
+  }
+  table.responsive-table td:nth-child(1):before,
+  table.responsive-table td:nth-child(2):before{
+    position: absolute;
+    left: .5em;
+    font-weight: bold;
+  }
+  
+    table.responsive-table tr,
+    table.responsive-table td{
+        display: block;
+    }
+    table.responsive-table tr{
+        position: relative;
+        margin-bottom: 1em;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+    }
+    table.responsive-table td{
+        border-top: none;
+    }
+    table.responsive-table td.organisationnumber{
+        background: #D5E0CC;
+        border-top: 1px solid #B3BFAA;
+    }
+    table.responsive-table td.actions{
+        position: absolute;
+        top: 0;
+        right: 0;
+        border: none;
+        background: none;
+    }
+}
+'''
+	
+	with open(css_path, 'w+') as f:
+		f.write(css)

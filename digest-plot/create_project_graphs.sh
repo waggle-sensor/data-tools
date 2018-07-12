@@ -1,3 +1,5 @@
+#!/bin/bash
+
 usage() {
 	echo "usage: ${0} project_dir_path"
 }
