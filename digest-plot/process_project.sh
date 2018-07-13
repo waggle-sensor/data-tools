@@ -10,7 +10,7 @@ if [ $(find ./scratch -name *.png | wc -l ) -gt 0 ]; then
 	mv $(find ./scratch -name *.png) ./build/plots
 fi 
 
-if [ $(find ./scratch -name *.html | wc -l | wc -l ) -gt 0 ]; then
+if [ $(find ./scratch -name *.html | wc -l ) -gt 0 ]; then
 	echo "Moving files"
 	mv $(find ./scratch -name *.html) ./build/tables
 fi 
