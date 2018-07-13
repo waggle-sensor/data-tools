@@ -49,8 +49,8 @@ if __name__ == '__main__':
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     for node in nodes:
-        # plots = 'http://www.mcs.anl.gov/research/projects/waggle/downloads/vis/tables/{}-table.html'.format(node['id'])
-        plots = './build/tables/{}-table.html'.format(node['id'])
+        plots = 'http://www.mcs.anl.gov/research/projects/waggle/downloads/vis/tables/{}-table.html'.format(node['id'])
+        # plots = './build/tables/{}-table.html'.format(node['id'])
 
         r = requests.head(plots)
 

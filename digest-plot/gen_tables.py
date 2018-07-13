@@ -283,14 +283,14 @@ table, th, td {{
 				if os.path.exists(week_path):
 					week_link = '<a href="{}">Week</a>'.format(os.path.relpath(week_path, 'tables'))
 				elif os.path.exists(alt_week):
-					day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_week, 'tables'))
+					week_link = '<a href="{}">Week</a>'.format(os.path.relpath(alt_week, 'tables'))
 				else:
 					week_link = 'Week'
 
 				if os.path.exists(day_path):
 					month_link = '<a href="{}">Month</a>'.format(os.path.relpath(month_path, 'tables'))
 				elif os.path.exists(alt_month):
-					day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_month, 'tables'))
+					month_link = '<a href="{}">Month</a>'.format(os.path.relpath(alt_month, 'tables'))
 				else:
 					month_link = 'Month'
 
