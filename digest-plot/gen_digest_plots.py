@@ -37,7 +37,7 @@ def extractData(input_path,output_path,parameter,sensor,subsystem):
 
 def getDates(days=1):
 	date_list = []
-	for i in range(days):
+	for i in range(1,days+1):
 		date_list.append((datetime.datetime.utcnow()-datetime.timedelta(i)).strftime("%Y-%m-%d"))
 	return date_list
 

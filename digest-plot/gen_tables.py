@@ -27,7 +27,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Generate tables')
 	parser.add_argument('project_dir', help='path to the project directory you want to generate tables for')
 	args = parser.parse_args()
-	
+
 	if not os.path.exists(args.project_dir):
 		print('[ERROR] {} does not exist'.format(args.project_dir))
 
@@ -280,7 +280,6 @@ table, th, td {{
 				# if os.path.exists(day_path):
 				# 	day_link = '<a href="{}">Day</a>'.format(os.path.relpath(day_path, 'tables'))
 				if os.path.exists(alt_day):
-					# day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_day, 'tables'))
 					day_link = '<a href="{}">Day</a>'.format(alt_day_link)
 				else:
 					day_link = 'Day'
@@ -288,7 +287,6 @@ table, th, td {{
 				# if os.path.exists(week_path):
 				# 	week_link = '<a href="{}">Week</a>'.format(os.path.relpath(week_path, 'tables'))
 				if os.path.exists(alt_week):
-					# week_link = '<a href="{}">Week</a>'.format(os.path.relpath(alt_week, 'tables'))
 					week_link = '<a href="{}">Week</a>'.format(alt_week_link)
 				else:
 					week_link = 'Week'
@@ -296,8 +294,7 @@ table, th, td {{
 				# if os.path.exists(day_path):
 				# 	month_link = '<a href="{}">Month</a>'.format(os.path.relpath(month_path, 'tables'))
 				if os.path.exists(alt_month):
-					# month_link = '<a href="{}">Month</a>'.format(os.path.relpath(alt_month, 'tables'))
-					moth_link = '<a href="{}">Month</a>'.format(alt_month_link)
+					month_link = '<a href="{}">Month</a>'.format(alt_month_link)
 				else:
 					month_link = 'Month'
 
