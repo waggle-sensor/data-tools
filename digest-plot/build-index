@@ -49,7 +49,7 @@ if __name__ == '__main__':
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     for node in nodes:
-        plots_link = './tables/{}-table.html'.format(node['id'])
+        plots_link = '../tables/{}-table.html'.format(node['id'])
         plots_path = './build/tables/{}-table.html'.format(node['id'])
 
         if os.path.exists(plots_path):
