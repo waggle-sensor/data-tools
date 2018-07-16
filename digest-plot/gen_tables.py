@@ -279,7 +279,7 @@ table, th, td {{
 
 				# if os.path.exists(day_path):
 				# 	day_link = '<a href="{}">Day</a>'.format(os.path.relpath(day_path, 'tables'))
-				if os.path.exists():
+				if os.path.exists(alt_day):
 					# day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_day, 'tables'))
 					day_link = '<a href="{}">Day</a>'.format(alt_day_link)
 				else:
