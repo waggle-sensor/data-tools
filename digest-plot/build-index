@@ -49,12 +49,10 @@ if __name__ == '__main__':
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     for node in nodes:
-        plots = 'http://www.mcs.anl.gov/research/projects/waggle/downloads/vis/tables/{}-table.html'.format(node['id'])
-        plots_path = './tables/{}-table.html'.format(node['id'])
+        plots_link = './tables/{}-table.html'.format(node['id'])
+        plots_path = './build/tables/{}-table.html'.format(node['id'])
 
-        r = requests.head(plots)
-
-        if r.status_code == 200:
+        if os.path.exists(plots_path):
             node['plots'] = plots_path
 
     with open(os.path.join(build_dir, 'index.html'), 'w') as f:
