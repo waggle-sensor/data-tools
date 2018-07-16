@@ -273,25 +273,25 @@ table, th, td {{
 				alt_week = '{path_prefix}/plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 				alt_month = '{path_prefix}/plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 
-				if os.path.exists(day_path):
-					day_link = '<a href="{}">Day</a>'.format(os.path.relpath(day_path, 'tables'))
-				elif os.path.exists(alt_day):
+				# if os.path.exists(day_path):
+				# 	day_link = '<a href="{}">Day</a>'.format(os.path.relpath(day_path, 'tables'))
+				if os.path.exists(alt_day):
 					# day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_day, 'tables'))
 					day_link = '<a href="{}">Day</a>'.format(alt_day)
 				else:
 					day_link = 'Day'
 
-				if os.path.exists(week_path):
-					week_link = '<a href="{}">Week</a>'.format(os.path.relpath(week_path, 'tables'))
-				elif os.path.exists(alt_week):
+				# if os.path.exists(week_path):
+				# 	week_link = '<a href="{}">Week</a>'.format(os.path.relpath(week_path, 'tables'))
+				if os.path.exists(alt_week):
 					# week_link = '<a href="{}">Week</a>'.format(os.path.relpath(alt_week, 'tables'))
 					week_link = '<a href="{}">Week</a>'.format(alt_week)
 				else:
 					week_link = 'Week'
 
-				if os.path.exists(day_path):
-					month_link = '<a href="{}">Month</a>'.format(os.path.relpath(month_path, 'tables'))
-				elif os.path.exists(alt_month):
+				# if os.path.exists(day_path):
+				# 	month_link = '<a href="{}">Month</a>'.format(os.path.relpath(month_path, 'tables'))
+				if os.path.exists(alt_month):
 					# month_link = '<a href="{}">Month</a>'.format(os.path.relpath(alt_month, 'tables'))
 					moth_link = '<a href="{}">Month</a>'.format(alt_month)
 				else:
