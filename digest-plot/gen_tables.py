@@ -306,7 +306,7 @@ table, th, td {{
 					'subsystem':subsystem,
 					'node_id':node,
 					'ontology':ontology_str,
-					'path_prefix':args.project_dir,
+					'path_prefix':'.',
 					'day_link':day_link,
 					'week_link':week_link,
 					'month_link':month_link
