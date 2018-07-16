@@ -42,7 +42,7 @@ if __name__ == '__main__':
 		exit(1)
 
 	cwd = os.getcwd()
-	path_prefix = '.'
+	path_prefix = './build'
 
 	dicts = getNodes(args.project_dir)
 	nodes_dict = dicts[0]
@@ -269,15 +269,19 @@ table, th, td {{
 				week_path = '{path_prefix}/plots/{node_id}/week/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 				month_path = '{path_prefix}/plots/{node_id}/month/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 
-				alt_day = './plots/{node_id}-{ontology}-day.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
-				alt_week = './plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
-				alt_month = './plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_day = '{path_prefix}/plots/{node_id}-{ontology}-day.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_week = '{path_prefix}/plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_month = '{path_prefix}/plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+
+				alt_day_link = './plots/{node_id}-{ontology}-day.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_week_link = './plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_month_link = './plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 
 				# if os.path.exists(day_path):
 				# 	day_link = '<a href="{}">Day</a>'.format(os.path.relpath(day_path, 'tables'))
-				if os.path.exists(alt_day):
+				if os.path.exists():
 					# day_link = '<a href="{}">Day</a>'.format(os.path.relpath(alt_day, 'tables'))
-					day_link = '<a href="{}">Day</a>'.format(alt_day)
+					day_link = '<a href="{}">Day</a>'.format(alt_day_link)
 				else:
 					day_link = 'Day'
 
@@ -285,7 +289,7 @@ table, th, td {{
 				# 	week_link = '<a href="{}">Week</a>'.format(os.path.relpath(week_path, 'tables'))
 				if os.path.exists(alt_week):
 					# week_link = '<a href="{}">Week</a>'.format(os.path.relpath(alt_week, 'tables'))
-					week_link = '<a href="{}">Week</a>'.format(alt_week)
+					week_link = '<a href="{}">Week</a>'.format(alt_week_link)
 				else:
 					week_link = 'Week'
 
@@ -293,7 +297,7 @@ table, th, td {{
 				# 	month_link = '<a href="{}">Month</a>'.format(os.path.relpath(month_path, 'tables'))
 				if os.path.exists(alt_month):
 					# month_link = '<a href="{}">Month</a>'.format(os.path.relpath(alt_month, 'tables'))
-					moth_link = '<a href="{}">Month</a>'.format(alt_month)
+					moth_link = '<a href="{}">Month</a>'.format(alt_month_link)
 				else:
 					month_link = 'Month'
 
