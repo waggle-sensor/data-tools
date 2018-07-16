@@ -15,7 +15,7 @@ if [ $(find ./scratch -name *.html | wc -l ) -gt 0 ]; then
 	mv $(find ./scratch -name *.html) ./build/tables
 fi 
 cp $(find ./scratch -name style.css | head -1) ./build/tables
-cat $(find ./scratch -name nodes.csv) | awk 'NR==1 || !/node_id,project_id,vsn,address,lat,lon,description/' > scratch/nodes.csv
+cat $(find ./scratch/$1.complete.[1-9]* -name nodes.csv) | awk 'NR==1 || !/node_id,project_id,vsn,address,lat,lon,description/' > scratch/nodes.csv
 mv ./scratch/nodes.csv ./build/$1_nodes.csv
 
 #python3 build-index ./scratch/nodes.csv ./build
