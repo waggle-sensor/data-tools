@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     for node in nodes:
         plots = 'http://www.mcs.anl.gov/research/projects/waggle/downloads/vis/tables/{}-table.html'.format(node['id'])
-        plots_path = './build/tables/{}-table.html'.format(node['id'])
+        plots_path = './tables/{}-table.html'.format(node['id'])
 
         r = requests.head(plots)
 
