@@ -42,7 +42,7 @@ if __name__ == '__main__':
 		exit(1)
 
 	cwd = os.getcwd()
-	path_prefix = './build'
+	path_prefix = '.'
 
 	dicts = getNodes(args.project_dir)
 	nodes_dict = dicts[0]
