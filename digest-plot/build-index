@@ -53,7 +53,7 @@ if __name__ == '__main__':
         plots_path = './build/tables/{}-table.html'.format(node['id'])
 
         if os.path.exists(plots_path):
-            node['plots'] = plots_path
+            node['plots'] = plots_link
 
     with open(os.path.join(build_dir, 'index.html'), 'w') as f:
         f.write(index_template.render(nodes=nodes, timestamp=timestamp))
