@@ -273,9 +273,9 @@ table, th, td {{
 				alt_week = '{path_prefix}/plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 				alt_month = '{path_prefix}/plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 
-				alt_day_link = './plots/{node_id}-{ontology}-day.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
-				alt_week_link = './plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
-				alt_month_link = './plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_day_link = '../plots/{node_id}-{ontology}-day.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_week_link = '../plots/{node_id}-{ontology}-week.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
+				alt_month_link = '../plots/{node_id}-{ontology}-month.png'.format(path_prefix=path_prefix,node_id=node,ontology=ontology_str)
 
 				# if os.path.exists(day_path):
 				# 	day_link = '<a href="{}">Day</a>'.format(os.path.relpath(day_path, 'tables'))
