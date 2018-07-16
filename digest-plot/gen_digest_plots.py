@@ -335,6 +335,15 @@ if __name__ == '__main__':
 						if unit == 'lux' and ontology == '/system/other/light':
 							if 'lux' in ylabel_list:
 								ylabel_list.remove('lux')
+				if 'RH' in ylabel_list:
+					for i,item in enumerate(ylabel_list):
+						if item == 'RH':
+							ylabel_list[i] = '%RH'
+				if 'C' in ylabel_list:
+					for i,item in enumerate(ylabel_list):
+						if item == 'C':
+							ylabel_list[i] = 'deg C'
+
 
 				if ontology_list[-1] == 'particle_count':
 					if 'pms7003' in sensor_list:
