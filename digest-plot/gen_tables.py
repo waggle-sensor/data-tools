@@ -295,12 +295,10 @@ table, th, td {{
 
 				# if os.path.exists(day_path):
 				# 	month_link = '<a href="{}">Month</a>'.format(os.path.relpath(month_path, 'tables'))
-				print(alt_month, end=' ')
 				if os.path.exists(alt_month):
 					# month_link = '<a href="{}">Month</a>'.format(os.path.relpath(alt_month, 'tables'))
 					moth_link = '<a href="{}">Month</a>'.format(alt_month_link)
 				else:
-					print('does not exist')
 					month_link = 'Month'
 
 				context = {
