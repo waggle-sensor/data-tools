@@ -50,12 +50,12 @@ if __name__ == '__main__':
 
     for node in nodes:
         plots = 'http://www.mcs.anl.gov/research/projects/waggle/downloads/vis/tables/{}-table.html'.format(node['id'])
-        # plots = './build/tables/{}-table.html'.format(node['id'])
+        plots_path = './build/tables/{}-table.html'.format(node['id'])
 
         r = requests.head(plots)
 
         if r.status_code == 200:
-            node['plots'] = plots
+            node['plots'] = plots_path
 
     with open(os.path.join(build_dir, 'index.html'), 'w') as f:
         f.write(index_template.render(nodes=nodes, timestamp=timestamp))
