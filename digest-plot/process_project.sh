@@ -6,7 +6,6 @@ if [ $(find ./scratch -name *.png | wc -l ) -gt 0 ]; then
 	echo "Moving files"
 	mv $(find ./scratch -name *.png) ./build/plots
 fi
-ls build/plots 
 find ./scratch -name $1.complete.[1-9]* | xargs -n 1 sh -c 'python3 gen_tables.py $0'
 if [ $(find ./scratch -name *.html | wc -l ) -gt 0 ]; then
 	echo "Moving files"
