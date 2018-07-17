@@ -22,7 +22,7 @@ To run the scripts, use the command line to navigate to the `digest-plot` direct
 
 To retrieve data run `./stage_project.sh project_id`  
 To generate the plots run `./create_project_graphs.sh project_directory_path`  
-To generate the tables run `python3 gen_tables.py`
+To generate the tables run `python3 gen_tables.py project_directory_path`
 
 
 ### Example
@@ -112,4 +112,4 @@ Plots are generated for each of the 3 time periods, day, week and month every ti
 
 ## Table Generation
 
-Tables for each node are generated based on the ontologies present in `sensors.csv` from requested dataset. For each ontology, if a corresponding plot exists, then a link to that plot will be in the table.
+Tables for each node are generated based on the ontologies present in `sensors.csv` from the requested dataset. For each ontology, if a corresponding plot exists, then a link to that plot will be in the table.
