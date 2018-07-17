@@ -6,7 +6,7 @@ This tool generates plots of data over the last day, week and month, for every n
 
 ## Requirements  
 
-This tool depends on **python3**, **numpy**, **pandas**, and **jinja2** packages for python3, as well as **gnuplot** and **curl**. Please make sure they are installed in the system where they are intended to be used.  
+This tool depends on **python3**, the **numpy**, **pandas**, and **jinja2** packages for python3, as well as **gnuplot** and **curl**. Please make sure they are installed in the system where they are intended to be used.  
 The bash shell scripts this tool uses require a Linux or Mac OS X environment to run.  
 The project directory used as input must have the following files:
 * `data.csv.gz`
