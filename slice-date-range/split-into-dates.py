@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description='''
 Splits the data.csv.gz for a project into dates/YYYY-MM-DD.csv.gz with in
 project folder.
 ''')
+parser.add_argument('-n', type=int, help='Split last n dates.')
 parser.add_argument('project_dir')
 args = parser.parse_args()
 
@@ -25,6 +26,9 @@ with open('offsets.csv') as file:
             'offset': int(row['offset']),
             'size': int(row['size'])
         })
+
+if args.n is not None:
+    chunks = chunks[-args.n:]
 
 # get compressed header. will be inserted at start of each date file.
 with gzip.open('data.csv.gz', 'rb') as file:
