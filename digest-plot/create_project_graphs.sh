@@ -33,6 +33,7 @@ for i in `seq 1 30`; do
 	date_dir="$project_dir".from-"$date"-to-"$date"
 	gzip -d "$date_dir"/data.csv.gz
 	python3 extract_nodes.py "$project_dir" "$date_dir" "./scratch/tmp" "$date"
+	rm -rf "$date_dir"
 done
 mv scratch/tmp/data "$project_dir"
 rm -rf scratch/tmp
@@ -40,7 +41,7 @@ rm -rf scratch/tmp
 date=$(date -u -d "1 days ago" +%Y-%m-%d)
 data_column=$(head -n1 "${project_dir}".from-"${date}"-to-"${date}"/data.csv | tr "," "\n" | grep -nx "value_hrf\|value_hrf_average\|value_hrf_moving_average" |  cut -d":" -f1)
 
-rm -rf "$project_dir".from*
+# rm -rf "$project_dir".from*
 
 python3 gen_digest_plots.py "$project_dir" "$data_column"
 
