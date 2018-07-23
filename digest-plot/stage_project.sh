@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 usage() {
 	echo "usage: ${0} project_id"
 }
