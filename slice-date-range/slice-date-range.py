@@ -4,14 +4,25 @@ import csv
 import datetime
 import gzip
 import os
-from shutil import copytree, ignore_patterns
+from shutil import copyfile
 
 
 def copy_project(src, dst):
-    try:
-        copytree(src, dst, ignore=ignore_patterns('data.csv*'))
-    except FileExistsError:
-        pass
+    files_to_copy = [
+        'nodes.csv',
+        'README.md',
+        'sensors.csv',
+        'provenance.csv',
+    ]
+
+    os.makedirs(dst, exist_ok=True)
+
+    for filename in files_to_copy:
+        try:
+            copyfile(src=os.path.join(src, filename),
+                     dst=os.path.join(dst, filename))
+        except FileExistsError:
+            pass
 
 
 def parse_date_string(s):
