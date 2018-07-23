@@ -33,6 +33,8 @@ for ((i=1;i<=30;i++)); do
 	data_path="$date_dir"/data.csv.gz
 	gzip -d "$data_path"
 	python3 extract_nodes.py "$project_dir" "$date_dir" "$date"
+	line=$(head -n 1 "$date_dir/data.csv")
+	echo "$line" > "$date_dir/data.csv"
 done
 
 date=$(date -u -d "1 days ago" +%Y-%m-%d)
@@ -43,6 +45,7 @@ rm -rf "$project_dir".from*
 python3 gen_digest_plots.py "$project_dir" "$data_column"
 
 rm -rf "$project_dir"/data
+
 if [ -f graph.plt ]; then
 	rm graph.plt
 fi
