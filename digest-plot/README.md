@@ -108,8 +108,10 @@ The data is obtained from a complete data set at http://www.mcs.anl.gov/research
 
 ## Plot Generation
 
-Plots are generated for each of the 3 time periods, day, week and month every time the script is executed. Plot generation generally consists of setting up parameters to be written to `graph.plt` to be plotted by gnuplot.
+Plots are generated for each of the 3 time periods, day, week and month every time the script is executed. Plot generation generally consists of setting up parameters to be written to `graph.plt` to be plotted by gnuplot.  
+Plots are saved to the project directory specified by `project_directory_path` in a folder called plots.
 
 ## Table Generation
 
-Tables for each node are generated based on the ontologies present in `sensors.csv` from the requested dataset. For each ontology, if a corresponding plot exists, then a link to that plot will be in the table.
+Tables for each node are generated based on the ontologies present in `sensors.csv` from the requested dataset. For each ontology, if a corresponding plot exists, then a link to that plot will be in the table.  
+Tables are saved to the project directory specified by `project_directory_path` in a folder called tables.
