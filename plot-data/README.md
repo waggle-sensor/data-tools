@@ -94,8 +94,9 @@ These arguments determine how the data will be displayed in the plot: `-v` (`--o
 	* Cannot be used in conjunction with `-v`
 * `-m` trims outlying data points (>±3σ)
 * `-s` plots data using a log scale for the y axis
-* `-F` sets the font size for plot titles and provenance, the default size is 12
-* `-f` sets the font size for plot keys and axis labels, the default size is 10
+* `-F` sets the font size for plot titles, the default size is 16
+* `-f` sets the font size for plot keys and axis labels, the default size is 12
+* `-e` sets the font size for plot provenance, the default size is 14
 * `-r` sets the resolution for the output image
 * `-a` sets the source address of the data for the plot provenance
 
