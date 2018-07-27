@@ -58,7 +58,7 @@ if __name__ == '__main__':
             pattern = re.compile('<a href=".*">(Day|Week|Month)<\/a>')
             for line in f:
                 line = line.strip()
-                match = pattern.math(line)
+                match = pattern.match(line)
                 if match:
                     has_data_flag = True
 
