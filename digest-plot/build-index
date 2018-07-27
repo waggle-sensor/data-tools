@@ -54,7 +54,7 @@ if __name__ == '__main__':
         plots_path = './build/tables/{}-table.html'.format(node['id'])
 
         has_data_flag = False
-        with open(plots_path,r) as f:
+        with open(plots_path,'r') as f:
             pattern = re.compile('<a href=".*">(Day|Week|Month)<\/a>')
             for line in f:
                 line = line.strip()
