@@ -35,3 +35,8 @@ if __name__ == '__main__':
 
 		# extract data for a node
 		status = grep(node,input_path,output_path)
+
+		if os.path.exists(output_path) and os.stat(output_path).st_size > 0:
+			os.makedirs('./build/data_dates',exist_ok=True)
+			with open ('./build/data_dates/{}.txt'.format(node),'a+') as f:
+				f.write(date+'\n')

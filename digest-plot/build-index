@@ -54,13 +54,21 @@ if __name__ == '__main__':
         plots_path = './build/tables/{}-table.html'.format(node['id'])
 
         has_data_flag = False
-        with open(plots_path,'r') as f:
-            pattern = re.compile('<a href=".*">(Day|Week|Month)<\/a>')
-            for line in f:
-                line = line.strip()
-                match = pattern.match(line)
-                if match:
-                    has_data_flag = True
+        # with open(plots_path,'r') as f:
+        #     pattern = re.compile('<a href=".*">(Day|Week|Month)<\/a>')
+        #     for line in f:
+        #         line = line.strip()
+        #         match = pattern.match(line)
+        #         if match:
+        #             has_data_flag = True
+        
+        latest = ''
+        if os.path.exists(os.path.join(build_dir,'data_dates','{}.txt'.format(node['id']))):
+            has_data_flag=True
+            with open(os.path.join(build_dir,'data_dates','{}.txt'.format(node['id'])),'r') as f:
+                latest = f.readline()
+                latest = latest.strip()
+                node['latest'] = latest
 
         if os.path.exists(plots_path) and has_data_flag:
             node['plots'] = plots_link

@@ -40,6 +40,7 @@
             <th>Name</th>
             <th>Description</th>
             <th>Location</th>
+            <th>Most Recent Data</th>
             <th>Plots</th>
           </tr>
         </thead>
@@ -51,6 +52,11 @@
             <td>{{ node['name'] }}</td>
             <td><span>{{ node['description'] }}</span></td>
             <td><span>{{ node['location'] }}</span></td>
+            {% if node['latest'] %}
+            <td><span>{{ node['latest'] }}</span></td>
+            {% else %}
+            <td>> 30 days ago</td>
+            {% endif %}
             {% if node['plots'] %}
             <td><a href="{{ node['plots'] }}">Plots</a></td>
             {% else %}
