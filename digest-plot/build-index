@@ -9,6 +9,7 @@ from pprint import pprint
 import sys
 import requests
 import pandas
+import re
 
 
 def load_json_file(path):
@@ -52,7 +53,16 @@ if __name__ == '__main__':
         plots_link = '../vis/tables/{}-table.html'.format(node['id'])
         plots_path = './build/tables/{}-table.html'.format(node['id'])
 
-        if os.path.exists(plots_path):
+        has_data_flag = False
+        with open(plots_path,r) as f:
+            pattern = re.compile('<a href=".*">(Day|Week|Month)<\/a>')
+            for line in f:
+                line = line.strip()
+                match = pattern.math(line)
+                if match:
+                    has_data_flag = True
+
+        if os.path.exists(plots_path) and has_data_flag:
             node['plots'] = plots_link
 
     with open(os.path.join(build_dir, 'index.html'), 'w') as f:
