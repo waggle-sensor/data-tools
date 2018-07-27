@@ -214,7 +214,7 @@ Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged co
 ```
 
 ## Detailed Description
-This tool will calculate a simple moving average from a complete node data set by averaging sensor values for time ranged windows specified by the user.
+This tool will calculate a simple moving average (an arithmetic moving average calculated by adding recent data points to the averaging window and then dividing that by the number of time periods in the calculation average) from a complete node data set by averaging sensor values for time ranged windows specified by the user.
 
 ### Input
 The command line tool `movingAvg.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified determines the time range window for calculating a simple moving average (e.g. over a span of 5 mins., 1 hr., 1 day, etc.). This time ranged window will move through the data in the data.csv file. For each sensor on each node, the tool will append new sensor values to the time ranged window and throw away values outside of the time ranged window. It will constantly calculate the average of the values in this window, which becomes the simple moving average as it parses through the data. 
