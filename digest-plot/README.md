@@ -2,7 +2,8 @@
 
 ## Overview
 
-This tool generates plots of data over the last day, week and month, for every node. These plots are displayed in a table sorted by the ontology of the data for each node. The tables contain links to each plot that exists. Not every node has data for every ontology, so those rows are unlinked. The plots can be updated daily.
+This tool generates plots of data over the last day, week and month, for every node. These plots are displayed in a table sorted by the ontology of the data for each node. The tables contain links to each plot that exists. Not every node has data for every ontology, so those rows are unlinked. The plots can be updated daily.  
+Digest plots are generated daily for every project and can be found at www.mcs.anl.gov/research/projects/waggle/downloads/vis/.
 
 ## Requirements  
 
