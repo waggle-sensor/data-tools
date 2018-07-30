@@ -137,13 +137,15 @@ if __name__ == '__main__':
 		exit(1)
 
 	start_date = '{} 00:00:00'.format(args.timeframe[0].replace('-','/'))
+	test_start = '{} 23:59:59'.format(args.timeframe[0].replace('-','/'))
 	end_date = '{} 23:59:59'.format(args.timeframe[1].replace('-','/'))
+	test_end = '{} 00:00:00'.format(args.timeframe[1].replace('-','/'))
 
-	if (start_date < earliest_date):
+	if (test_start < earliest_date):
 		print('[ERROR] Start date is earlier than the earliest date in data.csv')
-	if (end_date > latest_date):
+	if (test_end > latest_date):
 		print('[ERROR] End date is later than the latest date in data.csv')
-	if ((start_date < earliest_date) or (end_date > latest_date)):
+	if ((test_start < earliest_date) or (test_end > latest_date)):
 		exit(1)
 
 	exit_flag = False
