@@ -30,7 +30,7 @@ README.md      data.csv.gz    nodes.csv      offsets.csv    provenance.csv senso
 ## Usage
 
 This tool takes a project and creates a `project_dir/dates/YYYY-MM-DD.csv.gz`
-file for each date-wise chunk from `data.csv.gz`.
+file for each date-wise chunk from the dataset.
 
 ```
 $ ./split-into-dates.py project_dir
@@ -47,4 +47,4 @@ It supports and optional "last n dates" argument. For example:
 $ ./split-into-dates.py -n 7 project_dir
 ```
 
-This would extract only the _last_ 7 date files.
+This would extract only the _last_ 7 date files from the dataset.
