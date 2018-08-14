@@ -29,8 +29,8 @@ README.md      data.csv.gz    nodes.csv      offsets.csv    provenance.csv senso
 
 ## Usage
 
-This tool takes a project and extracts the `dates/YYYY-MM-DD.csv.gz` files for
-each date-wise chunk from `data.csv.gz`.
+This tool takes a project and creates a `project_dir/dates/YYYY-MM-DD.csv.gz`
+file for each date-wise chunk from `data.csv.gz`.
 
 ```
 $ ./split-into-dates.py project_dir
