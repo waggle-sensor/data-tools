@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 import argparse
-from glob import glob
 import os
 from jinja2 import Template
 from datetime import datetime
 import json
-from pprint import pprint
 import sys
-import requests
 import pandas
-import re
 
 
 def load_json_file(path):
@@ -54,14 +50,7 @@ if __name__ == '__main__':
         plots_path = './build/tables/{}-table.html'.format(node['id'])
 
         has_data_flag = False
-        # with open(plots_path,'r') as f:
-        #     pattern = re.compile('<a href=".*">(Day|Week|Month)<\/a>')
-        #     for line in f:
-        #         line = line.strip()
-        #         match = pattern.match(line)
-        #         if match:
-        #             has_data_flag = True
-        
+
         latest = ''
         if os.path.exists(os.path.join(build_dir,'data_dates','{}.txt'.format(node['id']))):
             has_data_flag=True
