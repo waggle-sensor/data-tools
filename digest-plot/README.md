@@ -1,4 +1,8 @@
-# Digest Plot Generation
+<!--
+waggle_topic=/data_analysis
+-->
+
+# Digest Plot Generation Tool
 
 ## Overview
 

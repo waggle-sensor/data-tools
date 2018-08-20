@@ -1,11 +1,15 @@
-# Moving Averages Command Line Tool
+<!--
+waggle_topic=/data_analysis
+-->
+
+# Moving Average Tool
 
 ## Requirements
 This tool requires Python3.
 
 ## Step-by-Step Instructions for Creating Moving Averages
 1. Download and unpackage a complete node dataset. Make sure to complete the step that unpackages the data.csv.gz archive.
-4. Run the movingAvg.py tool from the command line: 
+4. Run the movingAvg.py tool from the command line:
 ```python3 movingAvg.py -i /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```
 
 Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. Remember, the directory path specified must contain the following five files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv.
@@ -217,7 +221,7 @@ Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged co
 This tool will calculate a simple moving average (an arithmetic moving average calculated by adding recent data points to the averaging window and then dividing that by the number of time periods in the calculation average) from a complete node data set by averaging sensor values for time ranged windows specified by the user.
 
 ### Input
-The command line tool `movingAvg.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified determines the time range window for calculating a simple moving average (e.g. over a span of 5 mins., 1 hr., 1 day, etc.). This time ranged window will move through the data in the data.csv file. For each sensor on each node, the tool will append new sensor values to the time ranged window and throw away values outside of the time ranged window. It will constantly calculate the average of the values in this window, which becomes the simple moving average as it parses through the data. 
+The command line tool `movingAvg.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified determines the time range window for calculating a simple moving average (e.g. over a span of 5 mins., 1 hr., 1 day, etc.). This time ranged window will move through the data in the data.csv file. For each sensor on each node, the tool will append new sensor values to the time ranged window and throw away values outside of the time ranged window. It will constantly calculate the average of the values in this window, which becomes the simple moving average as it parses through the data.
 
 ### Output
 This tool will read the data.csv file located in the passed in directory path, parse through the large data.csv data set, and create moving averages for pieces of data (sensor values) over the time range window period given by the user. It will then create a new movingAvgData.csv file. The final output of the movingAvg.py tool will be a directory that contains the moving average data set (movingAvgData.csv) and the extra metadata files (nodes.csv, provenance.csv, README.md, and sensors.csv) from the passed in unpackaged complete node data set directory path.
@@ -225,7 +229,7 @@ This tool will read the data.csv file located in the passed in directory path, p
 **Important:** This tool has not been optimized yet and is time-window dependant; thus it will take a **very** long time (read: several days) to create moving averages for large data sets (> a few Gb) or for larger averaging time period windows (> 12h). It is **highly** recommended that a reduced data set, or an excerpt from the data.csv file, is used with this tool.
 
 ## How to Use movingAvg.py
-When typing on the terminal, the tool takes in two parameters with identifiers: input directory path (```-i, --input```) and averaging window period (```-t, --time```). 
+When typing on the terminal, the tool takes in two parameters with identifiers: input directory path (```-i, --input```) and averaging window period (```-t, --time```).
 
 **Input:** The path to the unpackaged complete node data set (must contain the files: data.csv, nodes.csv, provenance.csv, README.md, and sensors.csv).
 
@@ -234,7 +238,7 @@ When typing on the terminal, the tool takes in two parameters with identifiers: 
 **Note:** User is not allowed to enter anything less than 24 seconds because it is how often data is received and an average could not be calculated for anything lower.
 **Note:** The movingAvgData.csv output file will have the headers: ```timestamp,node_id,subsystem,sensor,parameter,value_hrf_sum,value_hrf_count,value_hrf_moving_average```.
 
-Terminal command format should be like this example: 
+Terminal command format should be like this example:
 
 ```python3 movingAvg.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m```
 

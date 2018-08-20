@@ -1,4 +1,8 @@
-# Custom Plot Generation
+<!--
+waggle_topic=/data_analysis
+-->
+
+# Custom Plot Generation Tool
 
 ## Overview
 
@@ -75,7 +79,7 @@ The arguments needed to generate a plot are `-i` (`--input`), `-o` (`--output`),
 	* A list of parameters, sensors and subsystems exists in sensors.csv
 * `-n` specifies a node and an ontology to plot
 	* Using this option, data from all sensors within the ontology will be plotted on one graph
-	* When using a custom layout, 
+	* When using a custom layout,
 	* Multiple ontologies van be specified by using the `-n` multiple times
 	* In order for a plot to be generated, the node and ontology must be valid:
 		* The node must exist in nodes.csv
@@ -347,6 +351,3 @@ When plotting ontologies using `-n`, each ontology will be plotted in 1 plot. So
 
 If you want to trim outlying data (greater than 3 or -3 standard deviations away from the mean) you can use the `-r` option.  
 If you want to plot data using a log scale, you can use the `-s` option.
-
-
-

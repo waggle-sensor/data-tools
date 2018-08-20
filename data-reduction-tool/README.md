@@ -1,4 +1,8 @@
-# Data Reduction Command Line Tool
+<!--
+waggle_topic=/data_analysis
+-->
+
+# Data Reduction Tool
 
 ## Requirements
 This tool requires Python3.
@@ -8,14 +12,14 @@ This tool requires Python3.
 2. Run the dataReduction.py tool from the command line:
 ```python3 dataReduction.py -i /PATH_TO_COMPLETE_NODE_DATA_SET -t #x```
 
-Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. The ```-v #``` option with ```#``` replaced by an integer can be used to print a line count after every ```#``` number of lines have been parsed (this causes the progam to take more time to reduce data). 
+Replace ```/PATH_TO_COMPLETE_NODE_DATA_SET``` with the path to the unpackaged compete node data set from step 1, ```#``` with an integer and ```x``` with one of the following characters: ```'s','m','h', or 'd'```. The ```-v #``` option with ```#``` replaced by an integer can be used to print a line count after every ```#``` number of lines have been parsed (this causes the progam to take more time to reduce data).
 
 ## Examples
 
 ### Data Reduction Over a 10 Min. Period
 
 #### Command:
-``` 
+```
 ermac:~/data-tools/data-reduction-tool$ python3 dataReduction.py -i ../AoT_Chicago.complete.2018-06-19 -t 10m
 Generating...
 Done. Took 7.01s to complete.
@@ -77,7 +81,7 @@ Generating...
 Done. Took 6.77s to complete.
 ```
 
-#### Reduced Data Output: 
+#### Reduced Data Output:
 
 ```
 2018/06/13 21:30:00,001e0610e537,alphasense,opc_n2,fw,NA,1,0
@@ -132,7 +136,7 @@ Generating...
 Done. Took 7.03s to complete.
 ```
 
-#### Reduced Data Output: 
+#### Reduced Data Output:
 
 ```
 2018/06/09 12:00:00,001e0610ba46,lightsense,hmc5883l,magnetic_field_x,-1254095.4310000015,3437,-364.88,-454.545,-272.727
@@ -182,11 +186,11 @@ Done. Took 7.03s to complete.
 ## Detailed Description
 This tool will reduce the amount of data from a complete node data set by averaging sensor values over a specified time period.
 
-### Input: 
+### Input:
 The command line tool `dataReduction.py` takes in a directory path and a time period. The directory path must be the full path to an unpackaged complete node data set (data sets located here: https://github.com/waggle-sensor/waggle/tree/master/data). This path must must contain the files: data.csv(uncompress the data.csv.gz file before using the tool), nodes.csv, provenance.csv, README.md, and sensors.csv. The tool will confirm that the aformentioned files exist in the passed in directory before allowing the user to begin reducing data. The time period specified by the user determines the "bucket" range of values for averaging (i.e. if the user specifies 1 day, all of the values for each sensor on each node will be reduced to a single timestamp for each day).
 
 ### Output:
-This tool will read the data.csv file located in the provided directory path, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a sub directory inside the source directory with reduced data set (reduced) data.csv and extra metadata files 
+This tool will read the data.csv file located in the provided directory path, and reduce the amount of data by averaging/combining pieces of data (sensor values) over the time period given by the user. It will then create a sub directory inside the source directory with reduced data set (reduced) data.csv and extra metadata files
 (nodes.csv, provenance.csv, and sensors.csv) along with a modified README (README.md). In the reduction process, the timestamps are written out as halfway between the interval specified by the user
 
 ## How to Use dataReduction.py
@@ -204,9 +208,9 @@ When typing on the terminal, the tool takes in two required parameters (input di
 
 Terminal command format should be like these examples:
 
-```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m``` 
+```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m```
 
-or 
+or
 
 ```python3 dataReduction.py -i /home/waggle-student/Downloads/AoT_Chicago.complete.2018-06-19 -t 30m -v 1000```
 
@@ -217,4 +221,3 @@ Errors will be specified for user error such as: not all of the parameters being
 
 ### Compatibility
 This tool was tested on a desktop computer with an Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz, 8 GB of RAM, Ubuntu 18.04 LTS, and Linux 4.15.0-23-generic. It has also been tested on an Apple Macbook and worked correctly.
-
