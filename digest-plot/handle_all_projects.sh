@@ -7,7 +7,7 @@ rm -rf ./build/plots/*
 rm -rf ./build/tables/*
 rm -rf ./build/data_dates/*
 
-./get_dataset_links.py 'http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php' | \
+./get_dataset_links 'http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php' | \
 	xargs -n 1 sh -c './process_project.sh $0'
 
 echo "node_id,project_id,vsn,address,lat,lon,description,start_timestamp,end_timestamp" > ./build/nodes.csv
