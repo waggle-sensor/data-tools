@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+from urllib.request import urlopen
 from html.parser import HTMLParser
-import requests
 import sys
 import re
+
 
 class LinkParser(HTMLParser):
 
@@ -21,10 +22,11 @@ class LinkParser(HTMLParser):
             print(match.group(1))
 
 
+def read_page(url):
+    with urlopen(url) as f:
+        return f.read().decode()
+
+
 url = sys.argv[1]
-
-r = requests.get(url)
-assert r.status_code == 200
-
 parser = LinkParser()
-parser.feed(r.text)
+parser.feed(read_page(url))
