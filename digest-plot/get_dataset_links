@@ -2,7 +2,7 @@
 from html.parser import HTMLParser
 import requests
 import sys
-
+import re
 
 class LinkParser(HTMLParser):
 
@@ -15,8 +15,10 @@ class LinkParser(HTMLParser):
         except KeyError:
             return
 
-        if link.endswith('complete.latest.tar'):
-            print(link)
+        match = re.search('/([^/]+).complete.latest.tar', link)
+
+        if match is not None:
+            print(match.group(1))
 
 
 url = sys.argv[1]
