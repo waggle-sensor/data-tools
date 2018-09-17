@@ -19,12 +19,10 @@ class LinkParser(HTMLParser):
             print(link)
 
 
-for url in sys.argv[1:]:
-    r = requests.get(url)
+url = sys.argv[1]
 
-    if r.status_code != 200:
-        print('warning: {} bad status code {}'.format(url, r.status_code), file=sys.stderr)
-        continue
+r = requests.get(url)
+assert r.status_code == 200
 
-    parser = LinkParser()
-    parser.feed(r.text)
+parser = LinkParser()
+parser.feed(r.text)
