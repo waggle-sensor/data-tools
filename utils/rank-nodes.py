@@ -10,4 +10,4 @@ r['total'] = r['count']
 r['valid'] = r['sum']
 r['invalid'] = r['count'] - r['sum']
 r['ratio'] = r['sum'] / r['count']
-print(r[['total', 'valid', 'invalid', 'ratio']].sort_values('ratio').to_string())
+print(r[['total', 'valid', 'invalid', 'ratio']].sort_values('ratio').reset_index().to_string(index=False))

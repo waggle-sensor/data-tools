@@ -12,4 +12,4 @@ r['invalid'] = r['count'] - r['sum']
 r['ratio'] = r['sum'] / r['count']
 
 with pd.option_context('display.multi_sparse', False):
-    print(r[['total', 'valid', 'invalid', 'ratio']].sort_values(['ratio', 'subsystem', 'sensor', 'parameter']).to_string())
+    print(r[['total', 'valid', 'invalid', 'ratio']].sort_values(['ratio', 'subsystem', 'sensor', 'parameter']).reset_index().to_string(index=False))
