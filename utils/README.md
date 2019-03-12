@@ -3,7 +3,7 @@
 ## Installing Dependendecies
 
 ```sh
-pip3 install -r requirements
+pip3 install -r requirements.txt
 ```
 
 ## Example
@@ -12,7 +12,7 @@ pip3 install -r requirements
 
 We can quickly annotate a data stream using the `annotate-stream.py` tool.
 
-```
+```sh
 curl -s https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.recent.csv | ./annotate-stream.py
 ```
 
