@@ -32,14 +32,14 @@ timestamp,node_id,subsystem,sensor,parameter,value_raw,value_hrf,valid,errors
 
 We can use the data stream annotation to generate a few health reports of the data. These can be used as follows:
 
-```
+```sh
 curl -s https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.recent.csv | ./annotate-stream.py | ./rank-nodes.py
 ```
 
-```
+```sh
 curl -s https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.recent.csv | ./annotate-stream.py | ./rank-sensors.py
 ```
 
-```
+```sh
 curl -s https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.recent.csv | ./annotate-stream.py | ./rank-node-sensors.py
 ```
